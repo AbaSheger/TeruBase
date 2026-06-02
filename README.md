@@ -63,7 +63,8 @@ Then add it to another Spring Boot application:
 
 ## Configuration
 
-TeruBase is enabled by default, but you should explicitly scope it to local/dev profiles.
+TeruBase is enabled by default for straightforward local development, but you
+should explicitly scope it to local/dev profiles.
 
 ```yaml
 terubase:
@@ -79,6 +80,16 @@ Disable it in production:
 ```yaml
 terubase:
   enabled: false
+```
+
+TeruBase also blocks its auto-configuration automatically when either the
+`prod` or `production` Spring profile is active. This prevents its local
+developer endpoints from being exposed accidentally. An intentional override
+requires the explicit property:
+
+```yaml
+terubase:
+  force-enable-in-production: true
 ```
 
 The isolated datasource uses:
@@ -242,7 +253,8 @@ Recommended safeguards:
 - never expose `/terubase/api/**` publicly
 - do not pass real production data to the AI endpoint
 - prefer export-only mode when reviewing generated SQL
-- disable TeruBase in production configuration
+- keep the default production-profile guard enabled; do not set
+  `terubase.force-enable-in-production=true` unless the exposure is intentional
 
 ## Open-source wedge and future cloud path
 

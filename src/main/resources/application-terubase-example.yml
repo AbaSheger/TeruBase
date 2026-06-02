@@ -8,3 +8,4 @@ terubase:
   open-ai-model: gpt-4o
   max-mock-rows: 100
   sql-execution-enabled: true
+  force-enable-in-production: false

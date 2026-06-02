@@ -14,6 +14,7 @@ public class TeruBaseProperties {
     private String openAiModel = "gpt-4o";
     private int maxMockRows = 100;
     private boolean sqlExecutionEnabled = true;
+    private boolean forceEnableInProduction = false;
 
     public boolean isEnabled() {
         return enabled;
@@ -85,5 +86,13 @@ public class TeruBaseProperties {
 
     public void setSqlExecutionEnabled(boolean sqlExecutionEnabled) {
         this.sqlExecutionEnabled = sqlExecutionEnabled;
+    }
+
+    public boolean isForceEnableInProduction() {
+        return forceEnableInProduction;
+    }
+
+    public void setForceEnableInProduction(boolean forceEnableInProduction) {
+        this.forceEnableInProduction = forceEnableInProduction;
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 @Configuration
 @EnableConfigurationProperties(TeruBaseProperties.class)
 @ConditionalOnProperty(name = "terubase.enabled", havingValue = "true", matchIfMissing = true)
+@Conditional(TeruBaseLocalOnlyCondition.class)
 public class TeruBaseAutoConfiguration {
 
     private static final Logger LOGGER = Logger.getLogger(TeruBaseAutoConfiguration.class.getName());
