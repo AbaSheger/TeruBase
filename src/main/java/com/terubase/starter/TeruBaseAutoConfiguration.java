@@ -43,8 +43,20 @@ public class TeruBaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public TeruBaseController teruBaseController(TeruBaseSqlService sqlService, TeruBaseProperties properties) {
+        return new TeruBaseController(sqlService, properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TeruBaseSchemaService teruBaseSchemaService(ApplicationContext applicationContext, TeruBaseProperties properties) {
         return new TeruBaseSchemaService(applicationContext, properties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseSchemaController teruBaseSchemaController(TeruBaseSchemaService schemaService) {
+        return new TeruBaseSchemaController(schemaService);
     }
 
     @Bean
@@ -91,5 +103,16 @@ public class TeruBaseAutoConfiguration {
     @ConditionalOnMissingBean
     public TeruBaseOpenAiClient teruBaseOpenAiClient(ObjectMapper objectMapper, TeruBaseProperties properties) {
         return new TeruBaseOpenAiClient(objectMapper, properties, Executors.newVirtualThreadPerTaskExecutor());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseAiDataController teruBaseAiDataController(
+            TeruBaseOpenAiClient openAiClient,
+            TeruBaseSqlService sqlService,
+            ObjectMapper objectMapper,
+            TeruBaseProperties properties
+    ) {
+        return new TeruBaseAiDataController(openAiClient, sqlService, objectMapper, properties);
     }
 }

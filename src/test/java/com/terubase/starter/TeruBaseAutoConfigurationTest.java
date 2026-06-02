@@ -16,7 +16,14 @@ class TeruBaseAutoConfigurationTest {
     @Test
     void enablesTeruBaseForLocalProfile() {
         contextRunner.withPropertyValues("spring.profiles.active=local")
-                .run(context -> assertThat(context).hasSingleBean(TeruBaseScenarioController.class));
+                .run(context -> {
+                    assertThat(context).hasSingleBean(TeruBaseController.class);
+                    assertThat(context).hasSingleBean(TeruBaseSchemaController.class);
+                    assertThat(context).hasSingleBean(TeruBaseScenarioController.class);
+                    assertThat(context).hasSingleBean(TeruBaseSeedPlanController.class);
+                    assertThat(context).hasSingleBean(TeruBaseExportController.class);
+                    assertThat(context).hasSingleBean(TeruBaseAiDataController.class);
+                });
     }
 
     @Test

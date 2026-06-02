@@ -3,9 +3,9 @@ terubase:
   jdbc-url: jdbc:h2:mem:terubase_isolated_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
   username: sa
   password: ""
-  entity-base-package: com.example
+  entity-base-package: com.example.store.domain
   open-ai-chat-completions-url: https://api.openai.com/v1/chat/completions
   open-ai-model: gpt-4o
   max-mock-rows: 100
-  sql-execution-enabled: true
+  sql-execution-enabled: false
   force-enable-in-production: false

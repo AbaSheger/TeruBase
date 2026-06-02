@@ -1,57 +1,28 @@
 # TeruBase
 
-TeruBase is a custom Spring Boot starter for local development workflows that need a safe, fast, disposable database playground.
+TeruBase is a Spring Boot-native AI seed-data copilot. It discovers JPA
+entities, builds relationship-aware seed plans, and exports reviewable seed SQL
+for local development, demos, QA scenarios, and CI fixtures.
 
-It auto-configures an isolated H2 in-memory database, exposes local developer control endpoints, discovers JPA entity models from the host application, and can ask an OpenAI-compatible chat completion model to generate mock SQL seed data for the sandbox database.
+> From JPA entities to realistic runnable seed data in minutes.
 
-> TeruBase is intended for local development and internal developer tooling only. Do not expose its endpoints publicly.
+TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
+console clone, a production database API, or an enterprise test-data-management
+platform.
 
-## Why TeruBase exists
+## Try It in 5 Minutes
 
-When building Spring Boot applications, developers often need to:
+TeruBase requires Java 21 and Spring Boot 3.4+.
 
-- test SQL ideas without touching the real application database
-- inspect JPA entity structure quickly
-- seed realistic local mock data
-- connect a small dashboard to a disposable database engine
-- reset and experiment without breaking the actual app state
-
-TeruBase gives you that workflow as a Spring Boot starter.
-
-## Features
-
-- Spring Boot 3.4+ auto-configuration
-- Java 21 baseline
-- isolated H2 in-memory database
-- PostgreSQL compatibility mode for H2
-- local REST API for status checks and SQL execution
-- JPA entity discovery through classpath scanning
-- relationship-aware entity metadata extraction
-- OpenAI-compatible mock SQL generation
-- transactional batch execution with rollback
-- export-only SQL mode for CI, demos, and seed files
-- CORS-enabled endpoints for standalone developer dashboards
-- Java Util Logging throughout
-
-## Positioning
-
-TeruBase is not trying to replace Flyway, Liquibase, Testcontainers, H2 Console, or enterprise test-data-management platforms.
-
-It is a Spring Boot-native developer experience layer for making local applications feel alive quickly.
-
-The long-term direction is:
-
-> Generate realistic, relationship-aware seed data from JPA entities for local development, frontend demos, onboarding, tests, and CI pipelines.
-
-## Install locally
-
-Clone the repository and install it into your local Maven cache:
+Install this starter into your local Maven cache:
 
 ```bash
+git clone https://github.com/AbaSheger/TeruBase.git
+cd TeruBase
 mvn clean install
 ```
 
-Then add it to another Spring Boot application:
+Add the starter to a Spring Boot application:
 
 ```xml
 <dependency>
@@ -61,104 +32,84 @@ Then add it to another Spring Boot application:
 </dependency>
 ```
 
-## Configuration
-
-TeruBase is enabled by default for straightforward local development, but you
-should explicitly scope it to local/dev profiles.
+Add local-only configuration to `application-local.yml`:
 
 ```yaml
 terubase:
   enabled: true
-  base-package: com.example
-  openai:
-    endpoint: https://api.openai.com/v1/chat/completions
-    model: gpt-4o
+  entity-base-package: com.example.store.domain
+  sql-execution-enabled: false
 ```
 
-Disable it in production:
+Start the application with the `local` profile, then inspect the built-in
+scenarios:
+
+```bash
+curl http://localhost:8080/terubase/api/scenarios
+```
+
+Generate a seed plan from your discovered JPA entities:
+
+```bash
+curl "http://localhost:8080/terubase/api/seed-plan?scenarioId=saas-billing-demo&count=30"
+```
+
+The seed-plan response is metadata-only. It does not call AI or execute SQL.
+Copy its `recommendedMockRequest` into `POST /terubase/api/mock` when you want
+AI-generated SQL. The generated request keeps `execute=false`.
+
+## Configuration
+
+The complete example is
+[`application-terubase-example.yml`](src/main/resources/application-terubase-example.yml).
+All settings are flat `terubase.*` properties:
 
 ```yaml
 terubase:
-  enabled: false
+  enabled: true
+  jdbc-url: jdbc:h2:mem:terubase_isolated_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+  username: sa
+  password: ""
+  entity-base-package: com.example.store.domain
+  open-ai-chat-completions-url: https://api.openai.com/v1/chat/completions
+  open-ai-model: gpt-4o
+  max-mock-rows: 100
+  sql-execution-enabled: false
+  force-enable-in-production: false
 ```
 
-TeruBase also blocks its auto-configuration automatically when either the
-`prod` or `production` Spring profile is active. This prevents its local
-developer endpoints from being exposed accidentally. An intentional override
-requires the explicit property:
+`sql-execution-enabled` controls the direct `POST /terubase/api/execute`
+endpoint. Keep it disabled unless the isolated local SQL console is needed.
+
+TeruBase auto-configuration is blocked when the `prod` or `production` Spring
+profile is active. An intentional override requires:
 
 ```yaml
 terubase:
   force-enable-in-production: true
 ```
 
-The isolated datasource uses:
+## Main Workflow
 
-```text
-jdbc:h2:mem:terubase_isolated_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-```
-
-## REST API
-
-All endpoints are rooted under:
-
-```text
-/terubase/api
-```
-
-### Status
-
-```http
-GET /terubase/api/status
-```
-
-Returns metadata about the isolated database.
-
-### Execute SQL
-
-```http
-POST /terubase/api/execute
-Content-Type: application/json
-
-{
-  "sql": "select 1 as value"
-}
-```
-
-For SELECT statements, TeruBase returns rows as ordered maps to preserve column sequence.
-
-For mutation statements, TeruBase returns affected row counts.
-
-### Discover JPA entities
+### Discover Entities
 
 ```http
 GET /terubase/api/entities
 ```
 
-Returns discovered JPA entities, columns, IDs, generated values, and relationships such as:
+TeruBase scans `terubase.entity-base-package` and returns JPA metadata for
+columns, IDs, generated values, enums, relationships, join columns, join
+tables, and deterministic insert-order hints. The hints guide seed generation;
+they are not a full database dependency planner.
 
-- `@ManyToOne`
-- `@OneToMany`
-- `@OneToOne`
-- `@ManyToMany`
-- `@JoinColumn`
-- `@JoinTable`
-
-The metadata also includes column constraints, enum values, join-column and
-join-table details, and deterministic insert-order hints for parent entities,
-child entities with foreign keys, and join tables. The hints guide seed
-generation; they are not a full database dependency planner.
-
-### Scenario templates
+### Choose a Scenario
 
 ```http
 GET /terubase/api/scenarios
+GET /terubase/api/scenarios/{id}
 ```
 
-Returns built-in scenario templates that can guide realistic seed-data
-generation. Fetch one template with `GET /terubase/api/scenarios/{id}`.
-
-Available scenario IDs:
+Built-in IDs:
 
 - `ecommerce-demo`
 - `saas-billing-demo`
@@ -168,18 +119,39 @@ Available scenario IDs:
 - `qa-edge-cases`
 - `frontend-dashboard-demo`
 
-### Seed plan
+### Build an AI-Ready Seed Plan
 
 ```http
 GET /terubase/api/seed-plan?scenarioId=saas-billing-demo&count=30
 ```
 
-This metadata-only endpoint does not call AI. It creates an AI-ready
-`schemaPrompt` from discovered JPA metadata and returns a
-`recommendedMockRequest` that can be used with `POST /terubase/api/mock`.
-`execute=false` remains the safe default.
+The response combines scenario intent with discovered metadata and returns a
+`schemaPrompt` plus a `recommendedMockRequest`. This endpoint does not require
+an API key and does not call AI.
 
-### Export generated seed data safely
+### Generate Export-First Seed SQL
+
+```http
+POST /terubase/api/mock
+Content-Type: application/json
+
+{
+  "count": 20,
+  "apiKey": "your-local-api-key",
+  "schema": "<schemaPrompt from /terubase/api/seed-plan>",
+  "scenario": "Generate a fictional SaaS billing demo with overdue invoices",
+  "dialect": "h2-postgresql-mode",
+  "execute": false
+}
+```
+
+`execute=false` returns SQL for review without running it. TeruBase accepts only
+`INSERT` statements from AI output. It blocks unsupported or destructive SQL.
+API keys are request-only: never commit, store, or log them.
+
+### Export Generated Data
+
+Export reviewed statements as SQL:
 
 ```http
 POST /terubase/api/export/sql
@@ -193,82 +165,58 @@ Content-Type: application/json
 }
 ```
 
+Or as JSON:
+
 ```http
 POST /terubase/api/export/json
 Content-Type: application/json
 
 {
-  "scenario": "SaaS billing demo",
+  "scenario": "Fictional SaaS billing demo",
   "statements": [
     "insert into customer (id, name) values (1, 'Sara')"
   ]
 }
 ```
 
-These endpoints return content for review, local seed files, CI fixtures, and
-demos. They do not execute SQL or write files to disk. Only `INSERT` statements
-are accepted; destructive SQL is blocked.
+Export endpoints do not execute SQL or write files to disk. They accept only
+`INSERT` statements and return content for review, local seed files, CI
+fixtures, and demos.
 
-### Generate mock seed SQL
+### Optional Local Execution
+
+AI-generated SQL can run against TeruBase's isolated H2 database by setting
+`"execute": true` in `POST /terubase/api/mock`. Batch execution is transactional
+and rolls back on failure.
+
+For direct local SQL access, explicitly enable:
+
+```yaml
+terubase:
+  sql-execution-enabled: true
+```
+
+Then use:
 
 ```http
-POST /terubase/api/mock
+GET /terubase/api/status
+
+POST /terubase/api/execute
 Content-Type: application/json
 
 {
-  "count": 20,
-  "apiKey": "sk-...",
-  "schema": "Customer(id, name, email), Order(id, customer_id, total)",
-  "scenario": "Generate a SaaS billing demo with overdue invoices and failed payments",
-  "dialect": "postgresql",
-  "execute": false
+  "sql": "select 1 as value"
 }
 ```
 
-If `execute` is false, TeruBase returns export-ready SQL only.
+## Safety Defaults
 
-If `execute` is true, TeruBase executes the generated SQL inside a transaction. If any statement fails, the transaction is rolled back.
-
-## Example response
-
-```json
-{
-  "scenario": "Generate a SaaS billing demo",
-  "dialect": "postgresql",
-  "executed": false,
-  "statements": [
-    "insert into customer (id, name, email) values (1, 'Sara Lind', 'sara@example.test')"
-  ],
-  "exportSql": "insert into customer ...;"
-}
-```
-
-## Safety notes
-
-TeruBase exposes powerful local developer endpoints. Treat it as local-only tooling.
-
-Recommended safeguards:
-
-- enable only under `local`, `dev`, or `test` profiles
-- never expose `/terubase/api/**` publicly
-- do not pass real production data to the AI endpoint
-- prefer export-only mode when reviewing generated SQL
-- keep the default production-profile guard enabled; do not set
-  `terubase.force-enable-in-production=true` unless the exposure is intentional
-
-## Open-source wedge and future cloud path
-
-The open-source starter should focus on trust, adoption, and real developer workflow value.
-
-Possible future hosted features:
-
-- GitHub repository scanning
-- team-shared demo data scenarios
-- schema history and seed-data versioning
-- CI/CD API
-- GDPR-friendly anonymization workflows
-- private scenario templates
-- audit logs and workspace controls
+- Use TeruBase only with `local`, `dev`, or `test` profiles.
+- Never expose `/terubase/api/**` publicly.
+- Never use real production records in prompts or examples.
+- Keep AI generation export-first with `"execute": false`.
+- Review generated SQL before optional isolated execution.
+- Keep `force-enable-in-production` disabled.
 
 ## Build
 
