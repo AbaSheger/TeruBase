@@ -217,3 +217,16 @@ Close coverage gaps and simplify the implementation before broader product work.
 
 - Do not expand product scope while closing quality gaps.
 
+## Known Limitations / Future Work
+
+- JPA metadata extraction currently focuses on field annotations. Property-access
+  mappings and less common JPA mapping patterns need dedicated coverage before
+  claiming broader compatibility.
+- `POST /terubase/api/mock` accepts an API key in the request body for a single
+  provider call. TeruBase does not store or log it, but deployments should still
+  avoid request-body logging. A future integration may support externally
+  supplied secrets without expanding the local starter scope.
+- Setting `"execute": true` on `POST /terubase/api/mock` explicitly runs the
+  validated `INSERT` batch against TeruBase's isolated H2 database.
+  `terubase.sql-execution-enabled` separately controls the direct SQL console
+  endpoint, `POST /terubase/api/execute`.

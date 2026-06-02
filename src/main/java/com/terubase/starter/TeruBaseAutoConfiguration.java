@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.sql.DataSource;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
@@ -24,21 +23,15 @@ public class TeruBaseAutoConfiguration {
 
     private static final Logger LOGGER = Logger.getLogger(TeruBaseAutoConfiguration.class.getName());
 
-    @Bean(name = "teruBaseDataSource")
-    @ConditionalOnMissingBean(name = "teruBaseDataSource")
-    public DataSource teruBaseDataSource(TeruBaseProperties properties) {
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseSqlService teruBaseSqlService(TeruBaseProperties properties) {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL(properties.getJdbcUrl());
         dataSource.setUser(properties.getUsername());
         dataSource.setPassword(properties.getPassword());
         LOGGER.info(() -> "TeruBase isolated datasource initialized: " + properties.getJdbcUrl());
-        return dataSource;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TeruBaseSqlService teruBaseSqlService(DataSource teruBaseDataSource) {
-        return new TeruBaseSqlService(teruBaseDataSource);
+        return new TeruBaseSqlService(dataSource);
     }
 
     @Bean

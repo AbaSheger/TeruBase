@@ -13,7 +13,7 @@ public class TeruBaseProperties {
     private String openAiChatCompletionsUrl = "https://api.openai.com/v1/chat/completions";
     private String openAiModel = "gpt-4o";
     private int maxMockRows = 100;
-    private boolean sqlExecutionEnabled = true;
+    private boolean sqlExecutionEnabled = false;
     private boolean forceEnableInProduction = false;
 
     public boolean isEnabled() {
