@@ -47,6 +47,18 @@ public class TeruBaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public ScenarioTemplateService scenarioTemplateService() {
+        return new ScenarioTemplateService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseScenarioController teruBaseScenarioController(ScenarioTemplateService scenarioTemplateService) {
+        return new TeruBaseScenarioController(scenarioTemplateService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TeruBaseOpenAiClient teruBaseOpenAiClient(ObjectMapper objectMapper, TeruBaseProperties properties) {
         return new TeruBaseOpenAiClient(objectMapper, properties, Executors.newVirtualThreadPerTaskExecutor());
     }

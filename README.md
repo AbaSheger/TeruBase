@@ -133,6 +133,25 @@ Returns discovered JPA entities, columns, IDs, generated values, and relationshi
 - `@JoinColumn`
 - `@JoinTable`
 
+### Scenario templates
+
+```http
+GET /terubase/api/scenarios
+```
+
+Returns built-in scenario templates that can guide realistic seed-data
+generation. Fetch one template with `GET /terubase/api/scenarios/{id}`.
+
+Available scenario IDs:
+
+- `ecommerce-demo`
+- `saas-billing-demo`
+- `crm-demo`
+- `banking-lite-demo`
+- `task-management-demo`
+- `qa-edge-cases`
+- `frontend-dashboard-demo`
+
 ### Generate mock seed SQL
 
 ```http
