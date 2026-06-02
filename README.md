@@ -133,6 +133,11 @@ Returns discovered JPA entities, columns, IDs, generated values, and relationshi
 - `@JoinColumn`
 - `@JoinTable`
 
+The metadata also includes column constraints, enum values, join-column and
+join-table details, and deterministic insert-order hints for parent entities,
+child entities with foreign keys, and join tables. The hints guide seed
+generation; they are not a full database dependency planner.
+
 ### Scenario templates
 
 ```http

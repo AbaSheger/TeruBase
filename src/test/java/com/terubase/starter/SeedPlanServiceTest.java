@@ -59,6 +59,21 @@ class SeedPlanServiceTest {
     }
 
     @Test
+    void schemaPromptContainsEnumValuesAndRelationshipMetadata() {
+        SeedPlanResponse response = service(List.of(Map.of(
+                "fields", List.of(
+                        Map.of("name", "status", "enumValues", List.of("ACTIVE", "SUSPENDED")),
+                        Map.of("name", "account", "relationships", List.of(Map.of(
+                                "type", "ManyToOne",
+                                "optional", false
+                        )))
+                )
+        ))).generate(null, null, 20, null);
+
+        assertThat(response.schemaPrompt()).contains("ACTIVE", "SUSPENDED", "ManyToOne", "optional");
+    }
+
+    @Test
     void recommendsExportOnlyMockRequest() {
         SeedPlanResponse response = service(List.of()).generate(null, null, 20, null);
 
