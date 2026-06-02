@@ -75,6 +75,18 @@ public class TeruBaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public TeruBaseExportService teruBaseExportService() {
+        return new TeruBaseExportService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseExportController teruBaseExportController(TeruBaseExportService exportService) {
+        return new TeruBaseExportController(exportService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TeruBaseOpenAiClient teruBaseOpenAiClient(ObjectMapper objectMapper, TeruBaseProperties properties) {
         return new TeruBaseOpenAiClient(objectMapper, properties, Executors.newVirtualThreadPerTaskExecutor());
     }

@@ -168,6 +168,36 @@ This metadata-only endpoint does not call AI. It creates an AI-ready
 `recommendedMockRequest` that can be used with `POST /terubase/api/mock`.
 `execute=false` remains the safe default.
 
+### Export generated seed data safely
+
+```http
+POST /terubase/api/export/sql
+Content-Type: application/json
+
+{
+  "statements": [
+    "insert into customer (id, name) values (1, 'Sara')"
+  ],
+  "filename": "demo-seed.sql"
+}
+```
+
+```http
+POST /terubase/api/export/json
+Content-Type: application/json
+
+{
+  "scenario": "SaaS billing demo",
+  "statements": [
+    "insert into customer (id, name) values (1, 'Sara')"
+  ]
+}
+```
+
+These endpoints return content for review, local seed files, CI fixtures, and
+demos. They do not execute SQL or write files to disk. Only `INSERT` statements
+are accepted; destructive SQL is blocked.
+
 ### Generate mock seed SQL
 
 ```http

@@ -96,15 +96,7 @@ public class TeruBaseAiDataController {
     private List<String> parseInsertStatements(String modelOutput) throws JsonProcessingException {
         String json = stripCodeFence(modelOutput);
         List<String> statements = objectMapper.readValue(json, SQL_LIST_TYPE);
-        if (statements.isEmpty()) {
-            throw new IllegalArgumentException("AI response did not contain SQL statements.");
-        }
-        for (String sql : statements) {
-            if (sql == null || !sql.strip().toLowerCase().startsWith("insert")) {
-                throw new IllegalArgumentException("Only INSERT statements are accepted from AI mock generation.");
-            }
-        }
-        return statements;
+        return SqlSafetyValidator.normalizeInsertStatements(statements);
     }
 
     private static String stripCodeFence(String value) {
