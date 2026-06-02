@@ -152,6 +152,17 @@ Available scenario IDs:
 - `qa-edge-cases`
 - `frontend-dashboard-demo`
 
+### Seed plan
+
+```http
+GET /terubase/api/seed-plan?scenarioId=saas-billing-demo&count=30
+```
+
+This metadata-only endpoint does not call AI. It creates an AI-ready
+`schemaPrompt` from discovered JPA metadata and returns a
+`recommendedMockRequest` that can be used with `POST /terubase/api/mock`.
+`execute=false` remains the safe default.
+
 ### Generate mock seed SQL
 
 ```http

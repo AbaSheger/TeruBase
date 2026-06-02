@@ -59,6 +59,22 @@ public class TeruBaseAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public SeedPlanService seedPlanService(
+            TeruBaseSchemaService schemaService,
+            ScenarioTemplateService scenarioTemplateService,
+            ObjectMapper objectMapper
+    ) {
+        return new SeedPlanService(schemaService, scenarioTemplateService, objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TeruBaseSeedPlanController teruBaseSeedPlanController(SeedPlanService seedPlanService) {
+        return new TeruBaseSeedPlanController(seedPlanService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TeruBaseOpenAiClient teruBaseOpenAiClient(ObjectMapper objectMapper, TeruBaseProperties properties) {
         return new TeruBaseOpenAiClient(objectMapper, properties, Executors.newVirtualThreadPerTaskExecutor());
     }
