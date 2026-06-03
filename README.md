@@ -58,6 +58,24 @@ The seed-plan response is metadata-only. It does not call AI or execute SQL.
 Copy its `recommendedMockRequest` into `POST /terubase/api/mock` when you want
 AI-generated SQL. The generated request keeps `execute=false`.
 
+## Try the Invoice Demo
+
+Install the local starter first:
+
+```bash
+mvn -B -ntp clean install
+```
+
+Then run the example Spring Boot app:
+
+```bash
+cd examples/invoice-demo
+mvn -B -ntp spring-boot:run
+```
+
+See [`examples/invoice-demo/README.md`](examples/invoice-demo/README.md) for
+curl examples and details.
+
 ## Configuration
 
 The complete example is
