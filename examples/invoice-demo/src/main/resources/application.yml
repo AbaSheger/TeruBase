@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: terubase-invoice-demo
+  datasource:
+    url: jdbc:h2:mem:invoice_demo;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+terubase:
+  enabled: true
+  entity-base-package: com.terubase.starter.examples.invoice
+  jdbc-url: jdbc:h2:mem:terubase_invoice_demo;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+  username: sa
+  password:
+  sql-execution-enabled: false
