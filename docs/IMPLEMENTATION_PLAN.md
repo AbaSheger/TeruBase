@@ -221,9 +221,10 @@ Close coverage gaps and simplify the implementation before broader product work.
 
 ### Goal
 
-Shift the next experiment from runtime-starter-first to
-Maven-plugin/build-time-generator-first. The starter remains an optional local
-playground and should not be removed.
+Make the Maven plugin the preferred path for the next adoption experiment. The
+plugin should scan, plan, and export build-time artifacts that complement
+Flyway/Liquibase and other existing seed workflows. The starter remains an
+optional local playground and should not be removed.
 
 ### Plugin Goals
 
@@ -253,7 +254,8 @@ playground and should not be removed.
 - `terubase:plan` writes a readable `target/terubase/seed-plan.md`.
 - `terubase:export-flyway` prototypes a Flyway-oriented export path without
   replacing Flyway or Liquibase.
-- Scan, plan, and export do not use AI tokens.
+- `terubase:plan` and `terubase:export-flyway` do not use AI tokens.
+- The plugin complements Flyway and Liquibase; it does not replace them.
 - AI generation remains optional and provider-agnostic in future work.
 - Future output direction supports Flyway, Liquibase, `data.sql`,
   Testcontainers, and CI workflows.

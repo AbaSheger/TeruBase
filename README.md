@@ -18,9 +18,10 @@
   </a>
 </p>
 
-TeruBase is a Spring Boot-native AI seed-data copilot. It discovers JPA
-entities, builds relationship-aware seed plans, and exports reviewable seed SQL
-for local development, demos, QA scenarios, and CI fixtures.
+TeruBase is a Spring Boot-native seed-data copilot. The preferred path is the
+Maven plugin: discover JPA entities at build time, build relationship-aware seed
+plans, and export reviewable artifacts for local development, demos, QA
+scenarios, and CI fixtures.
 
 > From JPA entities to realistic runnable seed data in minutes.
 
@@ -28,19 +29,24 @@ TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
 platform.
 
+The runtime starter remains available as an optional local playground. TeruBase
+complements Flyway and Liquibase by preparing seed artifacts for review; it does
+not replace migration tools.
+
 ## Why TeruBase?
 
 - Avoid boring manual `data.sql` work.
 - Make local apps and demos look realistic.
 - Generate relationship-aware seed plans from JPA entities.
 - Keep AI-generated SQL export-first and reviewable.
+- Complement Flyway and Liquibase instead of replacing them.
 - Avoid production data in local and dev workflows.
 
 ## Try It in 5 Minutes
 
 TeruBase requires Java 21 and Spring Boot 3.4+.
 
-Install this starter into your local Maven cache:
+Install the local TeruBase build first:
 
 ```bash
 git clone https://github.com/AbaSheger/TeruBase.git
@@ -48,7 +54,29 @@ cd TeruBase
 mvn -B -ntp clean install
 ```
 
-Add the starter to a Spring Boot application:
+In a Spring Boot project that declares the TeruBase Maven plugin, generate the
+non-AI seed plan artifacts:
+
+```bash
+mvn -B -ntp compile terubase:plan
+```
+
+This writes `target/terubase/schema-context.json` and
+`target/terubase/seed-plan.md` without using AI tokens. To copy a reviewed
+`target/terubase/generated-seed.sql` file into a Flyway migration:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+AI generation is optional future work for the plugin path and should remain
+provider-agnostic.
+
+### Optional Starter Playground
+
+Add the starter to a Spring Boot application when you want the local runtime
+playground endpoints:
+
 
 ```xml
 <dependency>
@@ -114,6 +142,10 @@ flowchart LR
     E --> G[local/demo/CI seed data]
     F --> G
 ```
+
+The plugin workflow mirrors the same shape at build time: JPA entities become
+schema context, seed plans, and exportable artifacts without requiring an AI
+provider.
 
 ## Endpoints
 

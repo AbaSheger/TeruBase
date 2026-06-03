@@ -31,16 +31,17 @@ without building and maintaining fixtures by hand.
 
 TeruBase is a Spring Boot-native seed-data copilot. It discovers JPA entities
 and relationships, prepares schema context, builds relationship-aware seed
-plans, and exports reviewable seed artifacts.
+plans, and exports reviewable seed artifacts that complement Flyway and
+Liquibase rather than replacing them.
 
-The next product experiment is Maven-plugin and build-time-generator first:
-scan the application model during development or CI, write schema context and
-seed plans into `target/terubase`, and export artifacts that complement existing
+The preferred product path is Maven-plugin and build-time-generator first: scan
+the application model during development or CI, write schema context and seed
+plans into `target/terubase`, and export artifacts that complement existing
 migration and test workflows. The runtime starter remains useful as an optional
 local playground, but it should not be the primary adoption path.
 
-Scan, plan, and export workflows should not use AI tokens. AI generation should
-be optional, provider-agnostic, and export-first when used.
+`terubase:plan` and `terubase:export-flyway` should not use AI tokens. AI
+generation should be optional, provider-agnostic, and export-first when used.
 
 ## What TeruBase Is Not
 
