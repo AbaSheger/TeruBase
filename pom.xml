@@ -12,19 +12,25 @@
     </parent>
 
     <groupId>com.terubase</groupId>
-    <artifactId>terubase-spring-boot-starter</artifactId>
+    <artifactId>terubase-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <name>TeruBase Spring Boot Starter</name>
-    <description>Spring Boot-native local seed-data sandbox for JPA entity discovery, isolated H2 execution, and AI-assisted relationship-aware mock data generation.</description>
+    <name>TeruBase</name>
+    <description>Spring Boot-native local seed-data tooling for JPA entity discovery and relationship-aware seed planning.</description>
     <url>https://github.com/AbaSheger/TeruBase</url>
+
+    <modules>
+        <module>terubase-spring-boot-starter</module>
+        <module>terubase-maven-plugin</module>
+    </modules>
 
     <properties>
         <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven-plugin-plugin.version>3.13.1</maven-plugin-plugin.version>
     </properties>
 
     <licenses>
@@ -42,52 +48,43 @@
         </developer>
     </developers>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.terubase</groupId>
+                <artifactId>terubase-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <parameters>true</parameters>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <useModulePath>false</useModulePath>
-                </configuration>
+                <groupId>com.terubase</groupId>
+                <artifactId>terubase-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <inherited>false</inherited>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <release>${maven.compiler.release}</release>
+                        <parameters>true</parameters>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <useModulePath>false</useModulePath>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

@@ -143,7 +143,7 @@ flowchart LR
 ## Configuration
 
 The complete example is
-[`application-terubase-example.yml`](src/main/resources/application-terubase-example.yml).
+[`application-terubase-example.yml`](terubase-spring-boot-starter/src/main/resources/application-terubase-example.yml).
 All settings are flat `terubase.*` properties:
 
 ```yaml

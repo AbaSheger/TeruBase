@@ -84,7 +84,7 @@ public class TeruBaseSchemaService {
     private Map<String, Object> describeEntity(String className) {
         Map<String, Object> model = new LinkedHashMap<>();
         try {
-            Class<?> entityClass = Class.forName(className);
+            Class<?> entityClass = loadClass(className);
             Entity entity = entityClass.getAnnotation(Entity.class);
             Table table = entityClass.getAnnotation(Table.class);
             model.put("className", entityClass.getName());
@@ -100,6 +100,14 @@ public class TeruBaseSchemaService {
             model.put("error", ex.getMessage());
         }
         return model;
+    }
+
+    private static Class<?> loadClass(String className) throws ClassNotFoundException {
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        if (contextClassLoader != null) {
+            return Class.forName(className, false, contextClassLoader);
+        }
+        return Class.forName(className);
     }
 
     private static List<Map<String, Object>> describeFields(Class<?> entityClass) {
