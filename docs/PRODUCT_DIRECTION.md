@@ -18,9 +18,10 @@ without building and maintaining fixtures by hand.
 
 - Generate relationship-aware local seed data from JPA entities.
 - Create realistic demo scenarios without production records.
-- Export reviewable SQL for local use and CI pipelines.
-- Populate an isolated H2 database to test application behavior.
+- Export reviewable seed artifacts for Flyway, Liquibase, `data.sql`,
+  Testcontainers, local use, and CI pipelines.
 - Inspect entity metadata before generating data.
+- Optionally use the runtime starter as a local playground.
 
 ## Product Promise
 
@@ -28,14 +29,18 @@ without building and maintaining fixtures by hand.
 
 ## What TeruBase Is
 
-TeruBase is a Spring Boot-native AI seed-data copilot. It discovers JPA entities
-and relationships, prepares AI-ready schema context, and generates safe,
-reviewable seed SQL. It supports export-first workflows and isolated local
-execution.
+TeruBase is a Spring Boot-native seed-data copilot. It discovers JPA entities
+and relationships, prepares schema context, builds relationship-aware seed
+plans, and exports reviewable seed artifacts.
 
-Its product angle is the full path from application model to useful scenario:
-schema discovery, scenario intent, relationship-aware generation, safe SQL
-export, and optional local execution.
+The next product experiment is Maven-plugin and build-time-generator first:
+scan the application model during development or CI, write schema context and
+seed plans into `target/terubase`, and export artifacts that complement existing
+migration and test workflows. The runtime starter remains useful as an optional
+local playground, but it should not be the primary adoption path.
+
+Scan, plan, and export workflows should not use AI tokens. AI generation should
+be optional, provider-agnostic, and export-first when used.
 
 ## What TeruBase Is Not
 
@@ -45,16 +50,22 @@ export, and optional local execution.
 - A migration tool replacing Flyway or Liquibase
 - An enterprise test-data-management platform yet
 - A reason to copy production data into development
+- A runtime dependency every application must carry
+- An OpenAI-only workflow
 
 ## Open-Source Wedge
 
-The open-source starter should solve one workflow well: add TeruBase to a Spring
-Boot service and quickly produce realistic runnable seed data from its JPA
-entities.
+The open-source wedge should solve one workflow well: run TeruBase from Maven
+and quickly produce reviewable schema context, seed plans, and seed artifacts
+from a Spring Boot application's JPA entities.
 
-The starter should remain local-first, useful without a cloud account, easy to
+The Maven plugin should be local-first, useful without a cloud account, easy to
 inspect, and safe by default. Scenario templates, seed plans, metadata quality,
-SQL export, profile guards, tests, and README examples are the immediate focus.
+SQL export, tests, and README examples remain important, but the next adoption
+experiment should avoid adding runtime weight to host applications.
+
+The starter should remain available for optional local exploration and demos. It
+should not be removed while the Maven plugin prototype is tested.
 
 ## Possible Future SaaS/Cloud Direction
 
@@ -72,19 +83,23 @@ These should not complicate the local starter before the core workflow is proven
 
 ## Short-Term Priorities
 
-1. Add scenario templates and `/terubase/api/scenarios`.
-2. Add an AI-ready seed-plan endpoint.
-3. Improve JPA metadata extraction.
-4. Add safe SQL export endpoints.
-5. Block risky endpoints in production profiles by default.
-6. Expand automated tests.
-7. Add clear README examples.
+1. Keep the runtime starter stable as an optional local playground.
+2. Prototype a Maven plugin with `terubase:scan`, `terubase:plan`, and
+   `terubase:export-flyway`.
+3. Generate `target/terubase/schema-context.json` and
+   `target/terubase/seed-plan.md` without AI calls.
+4. Keep AI generation optional, provider-agnostic, and export-first.
+5. Support future outputs for Flyway, Liquibase, `data.sql`, Testcontainers,
+   and CI.
+6. Expand automated tests around metadata, planning, and artifact generation.
+7. Do not add a frontend now.
 
 ## Long-Term Roadmap
 
-1. Prove the local starter workflow across real Spring Boot services.
+1. Prove the Maven plugin workflow across real Spring Boot services.
 2. Improve generation quality for common JPA relationship patterns.
 3. Support reusable team scenarios and CI usage.
-4. Evaluate hosted collaboration and governance features after adoption signals
+4. Add provider-agnostic optional AI generation after non-AI scan, plan, and
+   export workflows are valuable on their own.
+5. Evaluate hosted collaboration and governance features after adoption signals
    justify the added scope.
-

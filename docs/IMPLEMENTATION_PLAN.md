@@ -217,6 +217,60 @@ Close coverage gaps and simplify the implementation before broader product work.
 
 - Do not expand product scope while closing quality gaps.
 
+## Phase 8: Maven Plugin Prototype
+
+### Goal
+
+Shift the next experiment from runtime-starter-first to
+Maven-plugin/build-time-generator-first. The starter remains an optional local
+playground and should not be removed.
+
+### Plugin Goals
+
+- `terubase:scan`
+- `terubase:plan`
+- `terubase:export-flyway`
+
+### First Scope
+
+- Generate `target/terubase/schema-context.json`.
+- Generate `target/terubase/seed-plan.md`.
+- Do not call AI.
+- Do not add a frontend.
+- Do not remove the starter.
+
+### Files Likely to Change
+
+- Maven plugin module or plugin classes
+- Shared schema/plan DTOs if needed
+- Plugin tests
+- Documentation for plugin usage
+
+### Acceptance Criteria
+
+- `terubase:scan` discovers JPA entity context and writes
+  `target/terubase/schema-context.json`.
+- `terubase:plan` writes a readable `target/terubase/seed-plan.md`.
+- `terubase:export-flyway` prototypes a Flyway-oriented export path without
+  replacing Flyway or Liquibase.
+- Scan, plan, and export do not use AI tokens.
+- AI generation remains optional and provider-agnostic in future work.
+- Future output direction supports Flyway, Liquibase, `data.sql`,
+  Testcontainers, and CI workflows.
+
+### Tests to Add
+
+- Plugin goal execution tests for generated files
+- Deterministic output tests
+- No-AI-call regression test for scan, plan, and export goals
+
+### What Not to Do
+
+- Do not add a frontend.
+- Do not remove or break the runtime starter.
+- Do not make OpenAI a required build-time dependency.
+- Do not execute generated SQL as part of the first plugin scope.
+
 ## Known Limitations / Future Work
 
 - JPA metadata extraction currently focuses on field annotations. Property-access
@@ -224,9 +278,12 @@ Close coverage gaps and simplify the implementation before broader product work.
   claiming broader compatibility.
 - `POST /terubase/api/mock` accepts an API key in the request body for a single
   provider call. TeruBase does not store or log it, but deployments should still
-  avoid request-body logging. A future integration may support externally
-  supplied secrets without expanding the local starter scope.
+  avoid request-body logging. Future generation should be optional,
+  provider-agnostic, and separate from non-AI scan, plan, and export workflows.
 - Setting `"execute": true` on `POST /terubase/api/mock` explicitly runs the
   validated `INSERT` batch against TeruBase's isolated H2 database.
   `terubase.sql-execution-enabled` separately controls the direct SQL console
   endpoint, `POST /terubase/api/execute`.
+- Runtime starter usage remains useful for local exploration, but the next
+  adoption experiment is a Maven plugin that generates build-time artifacts for
+  Flyway, Liquibase, `data.sql`, Testcontainers, and CI.
