@@ -1,4 +1,18 @@
-# TeruBase
+<h1 align="center">TeruBase</h1>
+
+<p align="center">
+  TeruBase makes Spring Boot apps feel alive in minutes.
+</p>
+
+<p align="center">
+  <img alt="Java 21" src="https://img.shields.io/badge/Java-21-blue">
+  <img alt="Spring Boot 3.4+" src="https://img.shields.io/badge/Spring%20Boot-3.4%2B-brightgreen">
+  <img alt="Maven" src="https://img.shields.io/badge/Maven-build-orange">
+  <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green">
+  <a href="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml">
+    <img alt="Build status" src="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml/badge.svg">
+  </a>
+</p>
 
 TeruBase is a Spring Boot-native AI seed-data copilot. It discovers JPA
 entities, builds relationship-aware seed plans, and exports reviewable seed SQL
@@ -10,6 +24,14 @@ TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
 platform.
 
+## Why TeruBase?
+
+- Avoid boring manual `data.sql` work.
+- Make local apps and demos look realistic.
+- Generate relationship-aware seed plans from JPA entities.
+- Keep AI-generated SQL export-first and reviewable.
+- Avoid production data in local and dev workflows.
+
 ## Try It in 5 Minutes
 
 TeruBase requires Java 21 and Spring Boot 3.4+.
@@ -19,7 +41,7 @@ Install this starter into your local Maven cache:
 ```bash
 git clone https://github.com/AbaSheger/TeruBase.git
 cd TeruBase
-mvn clean install
+mvn -B -ntp clean install
 ```
 
 Add the starter to a Spring Boot application:
@@ -76,6 +98,44 @@ mvn -B -ntp spring-boot:run
 See [`examples/invoice-demo/README.md`](examples/invoice-demo/README.md) for
 curl examples and details.
 
+## Workflow
+
+```mermaid
+flowchart LR
+    A[JPA Entities] --> B[GET /terubase/api/entities]
+    B --> C[GET /terubase/api/seed-plan]
+    C --> D[POST /terubase/api/mock]
+    D --> E[POST /terubase/api/export/sql]
+    D --> F[POST /terubase/api/export/json]
+    E --> G[local/demo/CI seed data]
+    F --> G
+```
+
+## Endpoints
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/terubase/api/entities` | Discover JPA entity metadata. |
+| `GET` | `/terubase/api/scenarios` | List built-in scenario templates. |
+| `GET` | `/terubase/api/seed-plan` | Build an AI-ready seed plan. |
+| `POST` | `/terubase/api/mock` | Generate export-first AI seed SQL. |
+| `POST` | `/terubase/api/export/sql` | Export reviewed `INSERT` statements as SQL. |
+| `POST` | `/terubase/api/export/json` | Export reviewed `INSERT` statements as JSON. |
+| `GET` | `/terubase/api/status` | Check isolated SQL service status. |
+| `POST` | `/terubase/api/execute` | Execute SQL when explicitly enabled. |
+
+## Safety Defaults
+
+> Keep TeruBase local, export-first, and separate from production data.
+
+- Use TeruBase only with `local`, `dev`, or `test` profiles.
+- Never expose `/terubase/api/**` publicly.
+- Never use real production records in prompts or examples.
+- Keep AI generation export-first with `"execute": false`.
+- Review generated SQL before optional isolated execution.
+- Keep `sql-execution-enabled` disabled unless direct local SQL access is needed.
+- Keep `force-enable-in-production` disabled.
+
 ## Configuration
 
 The complete example is
@@ -95,9 +155,6 @@ terubase:
   sql-execution-enabled: false
   force-enable-in-production: false
 ```
-
-`sql-execution-enabled` controls the direct `POST /terubase/api/execute`
-endpoint. Keep it disabled unless the isolated local SQL console is needed.
 
 TeruBase auto-configuration is blocked when the `prod` or `production` Spring
 profile is active. An intentional override requires:
@@ -226,15 +283,6 @@ Content-Type: application/json
   "sql": "select 1 as value"
 }
 ```
-
-## Safety Defaults
-
-- Use TeruBase only with `local`, `dev`, or `test` profiles.
-- Never expose `/terubase/api/**` publicly.
-- Never use real production records in prompts or examples.
-- Keep AI generation export-first with `"execute": false`.
-- Review generated SQL before optional isolated execution.
-- Keep `force-enable-in-production` disabled.
 
 ## Build
 
