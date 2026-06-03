@@ -1,7 +1,7 @@
 <h1 align="center">TeruBase</h1>
 
 <p align="center">
-  <img src="docs/assets/terubase-logo.png" alt="TeruBase logo" width="220">
+  <img src="docs/assets/TeruBase.png" alt="TeruBase logo" width="220">
 </p>
 
 <p align="center">
