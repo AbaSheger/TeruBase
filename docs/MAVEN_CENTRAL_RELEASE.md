@@ -48,6 +48,22 @@ TeruBase is configured for Maven Central publishing through the
 4. Configure GPG locally. The release profile signs artifacts during `verify`,
    so Maven must be able to use your signing key.
 
+## GitHub Actions Secrets
+
+The manual release workflow at `.github/workflows/release.yml` expects these
+repository secrets:
+
+```text
+CENTRAL_USERNAME
+CENTRAL_PASSWORD
+GPG_PRIVATE_KEY
+GPG_PASSPHRASE
+```
+
+`CENTRAL_USERNAME` and `CENTRAL_PASSWORD` come from the Sonatype Central Portal
+user token. `GPG_PRIVATE_KEY` should be the ASCII-armored private key used for
+artifact signing. `GPG_PASSPHRASE` is the passphrase for that key.
+
 ## Validate Locally
 
 Normal project verification should still pass without release signing:
@@ -89,3 +105,14 @@ https://central.sonatype.com/publishing/deployments
 
 After publishing, bump the project back to the next development version, for
 example `0.1.1-SNAPSHOT`.
+
+## Publish With GitHub Actions
+
+The `Maven Central Release` workflow is manually triggered from GitHub Actions.
+
+Use `publish=false` first to verify that the release version can build, create
+source jars, create Javadoc jars, and sign artifacts.
+
+Use `publish=true` only after the dry run passes and the namespace is verified
+in the Central Portal. The workflow changes the Maven version only inside the
+workflow checkout; it does not commit release-version changes back to `main`.

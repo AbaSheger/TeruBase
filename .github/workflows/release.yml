@@ -1,0 +1,52 @@
+name: Maven Central Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: Release version, for example 0.1.0
+        required: true
+        default: 0.1.0
+      publish:
+        description: Deploy to Maven Central
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+      - name: Set release version
+        run: mvn -B -ntp versions:set -DnewVersion="${{ inputs.release_version }}" -DgenerateBackupPoms=false
+
+      - name: Verify release build
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -ntp -Pcentral-release clean verify
+
+      - name: Deploy to Maven Central
+        if: ${{ inputs.publish }}
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -ntp -Pcentral-release deploy -DskipTests
