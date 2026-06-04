@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  TeruBase makes Spring Boot apps feel alive in minutes.
+  A repeatable seed-data workflow for Spring Boot/JPA projects.
 </p>
 
 <p align="center">
@@ -18,12 +18,34 @@
   </a>
 </p>
 
-TeruBase is a Spring Boot-native seed-data copilot. The preferred path is the
-Maven plugin: discover JPA entities at build time, build relationship-aware seed
-plans, and export reviewable artifacts for local development, demos, QA
-scenarios, and CI fixtures.
+TeruBase turns Spring Boot/JPA entity metadata into a repeatable seed-data
+workflow: scan entities, create a seed plan, validate `INSERT`-only SQL, and
+export Flyway-ready files for local development, demos, QA scenarios, and CI
+fixtures.
 
 > From JPA entities to realistic runnable seed data in minutes.
+
+The preferred path is the Maven plugin. It discovers JPA entities at build time
+and writes reviewable artifacts without requiring an AI account:
+
+```bash
+mvn -B -ntp compile terubase:plan
+```
+
+```text
+target/terubase/schema-context.json
+target/terubase/seed-plan.md
+```
+
+After reviewing generated seed SQL, export it into a Flyway migration:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+```text
+src/main/resources/db/migration/V999__terubase_seed_data.sql
+```
 
 TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
@@ -35,12 +57,31 @@ not replace migration tools.
 
 ## Why TeruBase?
 
-- Avoid boring manual `data.sql` work.
-- Make local apps and demos look realistic.
-- Generate relationship-aware seed plans from JPA entities.
-- Keep AI-generated SQL export-first and reviewable.
+- Replace stale manual `data.sql` work with a repeatable workflow.
+- Generate relationship-aware seed plans from real JPA entities.
+- Keep seed SQL reviewable before it reaches Flyway or CI.
+- Block destructive SQL and accept only `INSERT` statements.
+- Make local apps and demos look realistic without production data.
 - Complement Flyway and Liquibase instead of replacing them.
-- Avoid production data in local and dev workflows.
+
+## Why Not Just ChatGPT?
+
+ChatGPT, Claude, Cursor, and Copilot can write example `INSERT` statements.
+That is useful, but it is not the whole workflow.
+
+TeruBase adds the project-specific parts around generation:
+
+- scans your compiled Spring Boot/JPA model
+- captures tables, columns, enums, IDs, relationships, and join metadata
+- creates a reusable seed plan from that metadata
+- validates reviewed SQL as `INSERT`-only
+- exports seed data into migration-friendly files
+- keeps AI optional and export-first
+
+Use an AI assistant if you want help drafting SQL. Use TeruBase when you want a
+repeatable Spring/JPA workflow around that SQL.
+
+See [ChatGPT vs TeruBase](docs/CHATGPT_VS_TERUBASE.md) for a linkable comparison.
 
 ## Try It in 5 Minutes
 
@@ -71,6 +112,66 @@ mvn -B -ntp terubase:export-flyway
 
 AI generation is optional future work for the plugin path and should remain
 provider-agnostic.
+
+### Example Output
+
+A compact `schema-context.json` looks like this:
+
+```json
+{
+  "entities": [
+    {
+      "className": "com.example.invoice.Customer",
+      "simpleName": "Customer",
+      "tableName": "customers",
+      "fields": [
+        {
+          "name": "id",
+          "type": "java.lang.Long",
+          "id": true,
+          "generatedValue": true
+        },
+        {
+          "name": "email",
+          "type": "java.lang.String",
+          "column": {
+            "name": "email",
+            "nullable": false,
+            "unique": true
+          }
+        }
+      ],
+      "insertOrderHint": "Parent or reference entity; insert before dependent child entities."
+    }
+  ]
+}
+```
+
+The matching `seed-plan.md` summarizes the workflow:
+
+```markdown
+# TeruBase Seed Plan
+
+- Scenario: Generate realistic relationship-aware local development seed data.
+- Target row count: 20
+- SQL dialect: h2-postgresql-mode
+- Discovered entities: 3
+
+## Insert Order Hints
+
+- Insert parent and reference tables first.
+- Insert child tables with foreign keys second.
+- Insert join tables last.
+- Populate every nullable=false field.
+```
+
+After review, `terubase:export-flyway` copies validated SQL into a Flyway file:
+
+```sql
+-- TeruBase seed data
+INSERT INTO customers (id, name, email) VALUES (1, 'Northstar Studio', 'billing@northstar.example');
+INSERT INTO invoices (id, customer_id, invoice_number, total_amount) VALUES (10, 1, 'INV-2026-0001', 1200.00);
+```
 
 ### Optional Starter Playground
 
@@ -114,21 +215,48 @@ AI-generated SQL. The generated request keeps `execute=false`.
 
 ## Try the Invoice Demo
 
-Install the local starter first:
+Install the local build first:
 
 ```bash
 mvn -B -ntp clean install
 ```
 
-Then run the example Spring Boot app:
+Then generate Maven plugin artifacts from the invoice demo:
 
 ```bash
 cd examples/invoice-demo
+mvn -B -ntp compile terubase:plan
+```
+
+This writes:
+
+```text
+examples/invoice-demo/target/terubase/schema-context.json
+examples/invoice-demo/target/terubase/seed-plan.md
+```
+
+To export reviewed SQL to Flyway, place reviewed `INSERT` statements in
+`examples/invoice-demo/target/terubase/generated-seed.sql`, then run:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+This writes:
+
+```text
+examples/invoice-demo/src/main/resources/db/migration/V999__terubase_seed_data.sql
+```
+
+You can also run the example Spring Boot app and use the local runtime
+playground endpoints:
+
+```bash
 mvn -B -ntp spring-boot:run
 ```
 
 See [`examples/invoice-demo/README.md`](examples/invoice-demo/README.md) for
-curl examples and details.
+plugin output, curl examples, and details.
 
 ## Workflow
 

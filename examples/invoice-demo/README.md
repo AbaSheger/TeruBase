@@ -1,6 +1,7 @@
 # TeruBase Invoice Demo
 
-Small Spring Boot app showing TeruBase discovering real JPA entities:
+Small Spring Boot app showing TeruBase's repeatable seed-data workflow on real
+JPA entities:
 
 - `Customer`
 - `Invoice`
@@ -11,18 +12,96 @@ Small Spring Boot app showing TeruBase discovering real JPA entities:
 The application uses its own H2 datasource for the invoice app. TeruBase uses a
 separate isolated H2 datasource for optional seed execution.
 
-## Run
+## Maven Plugin Workflow
 
-From the repository root, install the local starter version:
+From the repository root, install the local TeruBase build:
 
 ```bash
 mvn -B -ntp clean install
 ```
 
-Then run the demo app:
+Generate non-AI seed-plan artifacts from the invoice demo:
 
 ```bash
 cd examples/invoice-demo
+mvn -B -ntp compile terubase:plan
+```
+
+This writes:
+
+```text
+target/terubase/schema-context.json
+target/terubase/seed-plan.md
+```
+
+Example `schema-context.json` excerpt:
+
+```json
+{
+  "entities": [
+    {
+      "className": "com.terubase.starter.examples.invoice.Customer",
+      "simpleName": "Customer",
+      "tableName": "customers",
+      "insertOrderHint": "Parent or reference entity; insert before dependent child entities."
+    },
+    {
+      "className": "com.terubase.starter.examples.invoice.Invoice",
+      "simpleName": "Invoice",
+      "tableName": "invoices",
+      "insertOrderHint": "Child entity with foreign-key relationships; insert after referenced parent entities."
+    }
+  ]
+}
+```
+
+Example `seed-plan.md` excerpt:
+
+```markdown
+# TeruBase Seed Plan
+
+- Scenario: Generate realistic relationship-aware local development seed data.
+- Target row count: 20
+- SQL dialect: h2-postgresql-mode
+- Discovered entities: 3
+
+## Insert Order Hints
+
+- Insert parent and reference tables first.
+- Insert child tables with foreign keys second.
+- Insert join tables last.
+```
+
+After reviewing seed SQL, write it to `target/terubase/generated-seed.sql`:
+
+```sql
+-- TeruBase seed data
+INSERT INTO customers (id, name, email, billing_city, billing_country)
+VALUES (1, 'Northstar Studio', 'billing@northstar.example', 'Stockholm', 'Sweden');
+
+INSERT INTO invoices (id, invoice_number, customer_id, total_amount, currency, status)
+VALUES (10, 'INV-2026-0001', 1, 1200.00, 'USD', 'SENT');
+```
+
+Then export it to a Flyway migration:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+This writes:
+
+```text
+src/main/resources/db/migration/V999__terubase_seed_data.sql
+```
+
+TeruBase validates the export as `INSERT`-only before writing the Flyway file.
+
+## Optional Runtime Playground
+
+Run the demo app:
+
+```bash
 mvn -B -ntp spring-boot:run
 ```
 
@@ -91,6 +170,7 @@ curl -X POST http://localhost:8080/terubase/api/export/sql \
 
 - The direct SQL execution endpoint remains disabled by default with
   `terubase.sql-execution-enabled=false`.
+- The Maven plugin workflow does not call an AI provider.
 - `/terubase/api/mock` requires an OpenAI-compatible API key because it calls the
   configured AI provider.
 - The example is intentionally small and does not define business APIs beyond
