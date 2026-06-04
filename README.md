@@ -102,6 +102,19 @@ non-AI seed plan artifacts:
 mvn -B -ntp compile terubase:plan
 ```
 
+Once TeruBase is published to Maven Central, consumers can use the plugin with
+released coordinates instead of installing the repo locally:
+
+```xml
+<plugin>
+  <groupId>com.terubase</groupId>
+  <artifactId>terubase-maven-plugin</artifactId>
+  <version>0.1.0</version>
+</plugin>
+```
+
+Maintainers can follow the [Maven Central release checklist](docs/MAVEN_CENTRAL_RELEASE.md).
+
 This writes `target/terubase/schema-context.json` and
 `target/terubase/seed-plan.md` without using AI tokens. To copy a reviewed
 `target/terubase/generated-seed.sql` file into a Flyway migration:
