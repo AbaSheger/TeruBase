@@ -24,12 +24,10 @@ TeruBase is configured for Maven Central publishing through the
 2. Create and verify the namespace for the Maven group:
 
    ```text
-   com.terubase
+   io.github.abasheger
    ```
 
-   If `com.terubase` is not available or cannot be verified, change the Maven
-   `groupId` before publishing. Common fallback coordinates are based on a
-   verified domain or GitHub namespace, for example `io.github.abasheger`.
+   The Maven `groupId` must match this verified namespace.
 
 3. Generate a Central Portal user token and add it to `~/.m2/settings.xml`:
 

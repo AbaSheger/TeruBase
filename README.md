@@ -107,7 +107,7 @@ released coordinates instead of installing the repo locally:
 
 ```xml
 <plugin>
-  <groupId>com.terubase</groupId>
+  <groupId>io.github.abasheger</groupId>
   <artifactId>terubase-maven-plugin</artifactId>
   <version>0.1.0</version>
 </plugin>
@@ -194,9 +194,9 @@ playground endpoints:
 
 ```xml
 <dependency>
-    <groupId>com.terubase</groupId>
+    <groupId>io.github.abasheger</groupId>
     <artifactId>terubase-spring-boot-starter</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
