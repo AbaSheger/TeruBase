@@ -39,7 +39,12 @@ jobs:
         run: |
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          printf '%s' "$GPG_PRIVATE_KEY" > private.key
+          test -s private.key
+          head -n 1 private.key | grep -q 'BEGIN PGP PRIVATE KEY BLOCK'
+          gpg --batch --import private.key
+          gpg --list-secret-keys --keyid-format=long
+          rm -f private.key
 
       - name: Set release version
         run: mvn -B -ntp versions:set -DnewVersion="${{ inputs.release_version }}" -DgenerateBackupPoms=false
