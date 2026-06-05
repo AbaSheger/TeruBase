@@ -13,6 +13,9 @@
   <img alt="Spring Boot 3.4+" src="https://img.shields.io/badge/Spring%20Boot-3.4%2B-brightgreen">
   <img alt="Maven" src="https://img.shields.io/badge/Maven-build-orange">
   <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green">
+  <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.0">
+    <img alt="Maven Central" src="https://img.shields.io/badge/Maven%20Central-0.1.0-blue">
+  </a>
   <a href="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml">
     <img alt="Build status" src="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml/badge.svg">
   </a>
@@ -27,6 +30,14 @@ fixtures.
 
 The preferred path is the Maven plugin. It discovers JPA entities at build time
 and writes reviewable artifacts without requiring an AI account:
+
+```xml
+<plugin>
+  <groupId>io.github.abasheger</groupId>
+  <artifactId>terubase-maven-plugin</artifactId>
+  <version>0.1.0</version>
+</plugin>
+```
 
 ```bash
 mvn -B -ntp compile terubase:plan
@@ -87,40 +98,47 @@ See [ChatGPT vs TeruBase](docs/CHATGPT_VS_TERUBASE.md) for a linkable comparison
 
 TeruBase requires Java 21 and Spring Boot 3.4+.
 
-Install the local TeruBase build first:
+Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
 
-```bash
-git clone https://github.com/AbaSheger/TeruBase.git
-cd TeruBase
-mvn -B -ntp clean install
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>io.github.abasheger</groupId>
+      <artifactId>terubase-maven-plugin</artifactId>
+      <version>0.1.0</version>
+      <configuration>
+        <entityBasePackage>com.example.yourapp</entityBasePackage>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
 ```
 
-In a Spring Boot project that declares the TeruBase Maven plugin, generate the
-non-AI seed plan artifacts:
+Generate non-AI seed-plan artifacts from the project metadata:
 
 ```bash
 mvn -B -ntp compile terubase:plan
 ```
 
-Once TeruBase is published to Maven Central, consumers can use the plugin with
-released coordinates instead of installing the repo locally:
+This writes:
 
-```xml
-<plugin>
-  <groupId>io.github.abasheger</groupId>
-  <artifactId>terubase-maven-plugin</artifactId>
-  <version>0.1.0</version>
-</plugin>
+```text
+target/terubase/schema-context.json
+target/terubase/seed-plan.md
 ```
 
-Maintainers can follow the [Maven Central release checklist](docs/MAVEN_CENTRAL_RELEASE.md).
-
-This writes `target/terubase/schema-context.json` and
-`target/terubase/seed-plan.md` without using AI tokens. To copy a reviewed
-`target/terubase/generated-seed.sql` file into a Flyway migration:
+To copy a reviewed `target/terubase/generated-seed.sql` file into a Flyway
+migration:
 
 ```bash
 mvn -B -ntp terubase:export-flyway
+```
+
+This writes:
+
+```text
+src/main/resources/db/migration/V999__terubase_seed_data.sql
 ```
 
 AI generation is optional future work for the plugin path and should remain
