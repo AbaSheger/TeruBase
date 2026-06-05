@@ -56,17 +56,29 @@ repository secrets:
 ```text
 CENTRAL_USERNAME
 CENTRAL_PASSWORD
-GPG_PRIVATE_KEY
+GPG_PRIVATE_KEY_BASE64
 GPG_PASSPHRASE
 ```
 
 `CENTRAL_USERNAME` and `CENTRAL_PASSWORD` come from the Sonatype Central Portal
-user token. `GPG_PRIVATE_KEY` should be the ASCII-armored private key used for
-artifact signing. `GPG_PASSPHRASE` is the passphrase for that key.
+user token. `GPG_PRIVATE_KEY_BASE64` should be a base64-encoded copy of the
+ASCII-armored private key used for artifact signing. `GPG_PASSPHRASE` is the
+passphrase for that key.
 
-The workflow imports the private key manually and exposes the passphrase to
-Maven as `MAVEN_GPG_PASSPHRASE`, which is the environment variable expected by
-the Maven GPG Plugin in unattended CI builds.
+The workflow decodes and imports the private key manually, then exposes the
+passphrase to Maven as `MAVEN_GPG_PASSPHRASE`, which is the environment variable
+expected by the Maven GPG Plugin in unattended CI builds.
+
+On Windows PowerShell, generate the base64 secret value with:
+
+```powershell
+& 'C:\Program Files\GnuPG\bin\gpg.exe' --armor --export-secret-keys YOUR_KEY_ID | Set-Content -LiteralPath private.key -Encoding ascii
+[Convert]::ToBase64String([IO.File]::ReadAllBytes((Resolve-Path private.key))) | Set-Clipboard
+Remove-Item -LiteralPath private.key -Force
+```
+
+Then paste the clipboard value into the GitHub secret named
+`GPG_PRIVATE_KEY_BASE64`.
 
 ## Validate Locally
 
