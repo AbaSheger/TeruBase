@@ -64,6 +64,10 @@ GPG_PASSPHRASE
 user token. `GPG_PRIVATE_KEY` should be the ASCII-armored private key used for
 artifact signing. `GPG_PASSPHRASE` is the passphrase for that key.
 
+The workflow imports the private key manually and exposes the passphrase to
+Maven as `MAVEN_GPG_PASSPHRASE`, which is the environment variable expected by
+the Maven GPG Plugin in unattended CI builds.
+
 ## Validate Locally
 
 Normal project verification should still pass without release signing:
