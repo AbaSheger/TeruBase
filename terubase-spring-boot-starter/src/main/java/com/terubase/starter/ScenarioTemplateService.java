@@ -47,6 +47,30 @@ public class ScenarioTemplateService {
                     List.of("User", "Team", "Project", "Task", "Comment")
             ),
             new ScenarioTemplate(
+                    "inventory-management-demo",
+                    "Inventory Management Demo",
+                    "A warehouse and stock-control dataset with products, suppliers, locations, and inventory movements.",
+                    "Generate an inventory management demo with products, suppliers, warehouses, stock levels, reorder points, and inbound and outbound stock movements.",
+                    List.of("stock dashboards", "warehouse operations", "reorder workflows"),
+                    List.of("Product", "Supplier", "Warehouse", "InventoryItem", "StockMovement")
+            ),
+            new ScenarioTemplate(
+                    "learning-management-demo",
+                    "Learning Management Demo",
+                    "An online learning dataset with courses, instructors, students, enrollments, lessons, and progress.",
+                    "Generate a learning management demo with instructors, students, courses, enrollments, lessons, assignments, and progress states.",
+                    List.of("course catalogs", "student dashboards", "progress tracking"),
+                    List.of("Instructor", "Student", "Course", "Enrollment", "Lesson", "Assignment")
+            ),
+            new ScenarioTemplate(
+                    "event-registration-demo",
+                    "Event Registration Demo",
+                    "An event signup dataset with venues, sessions, attendees, tickets, and check-in activity.",
+                    "Generate an event registration demo with venues, events, sessions, attendees, ticket types, registrations, and check-in states.",
+                    List.of("event dashboards", "ticketing flows", "check-in reports"),
+                    List.of("Venue", "Event", "Session", "Attendee", "Ticket", "Registration")
+            ),
+            new ScenarioTemplate(
                     "qa-edge-cases",
                     "QA Edge Cases",
                     "A boundary-focused dataset for validating application behavior.",

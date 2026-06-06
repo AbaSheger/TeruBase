@@ -22,9 +22,9 @@ class TeruBaseScenarioControllerTest {
     void returnsAllScenarios() throws Exception {
         mockMvc.perform(get("/terubase/api/scenarios"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(7))
+                .andExpect(jsonPath("$.length()").value(10))
                 .andExpect(jsonPath("$[0].id").value("ecommerce-demo"))
-                .andExpect(jsonPath("$[6].id").value("frontend-dashboard-demo"));
+                .andExpect(jsonPath("$[9].id").value("frontend-dashboard-demo"));
     }
 
     @Test
