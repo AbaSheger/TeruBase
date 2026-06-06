@@ -75,6 +75,7 @@ public class PlanMojo extends AbstractMojo {
             writeSeedPlan(entities);
             getLog().info("Generated " + outputPath().resolve("schema-context.json"));
             getLog().info("Generated " + outputPath().resolve("seed-plan.md"));
+            getLog().info(nextSteps());
         } catch (IOException | RuntimeException ex) {
             throw new MojoExecutionException("Could not generate TeruBase seed plan.", ex);
         }
@@ -287,6 +288,24 @@ public class PlanMojo extends AbstractMojo {
 
     private Path outputPath() {
         return outputDirectory.toPath();
+    }
+
+    String nextSteps() {
+        Path schemaContext = outputPath().resolve("schema-context.json");
+        Path seedPlan = outputPath().resolve("seed-plan.md");
+        Path generatedSql = outputPath().resolve("generated-seed.sql");
+        return """
+
+                TeruBase AI prompt (copy and paste into your preferred AI):
+                Generate INSERT-only seed SQL using %s and %s. Follow the relationships, constraints, row count, and SQL dialect in those files. Return SQL only.
+
+                Save the AI response to:
+                %s
+
+                Then run one of:
+                mvn -B -ntp terubase:export-data-sql
+                mvn -B -ntp terubase:export-flyway
+                """.formatted(schemaContext, seedPlan, generatedSql).stripTrailing();
     }
 
     private String markdown(List<Map<String, Object>> entities) {

@@ -31,6 +31,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
+It also prints a ready-to-copy AI prompt and the expected SQL save path directly
+in the terminal.
+
 Write the SQL yourself or use any AI assistant to draft it from those
 artifacts. After reviewing it, save it as
 `target/terubase/generated-seed.sql` and export it to Spring Boot `data.sql`:

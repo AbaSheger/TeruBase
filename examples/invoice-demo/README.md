@@ -34,6 +34,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
+The command also prints a ready-made AI prompt and the exact next commands in
+the terminal. It does not create another prompt file or call an AI provider.
+
 Example `schema-context.json` excerpt:
 
 ```json

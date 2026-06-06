@@ -48,6 +48,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
+The command also prints a ready-made AI prompt, the exact path where the SQL
+response should be saved, and the available export commands.
+
 The plugin does not generate row values or call an AI provider. Create
 `target/terubase/generated-seed.sql` yourself or with an AI assistant, review
 it, then export it as Spring Boot's familiar `data.sql`:
@@ -138,6 +141,12 @@ This writes:
 ```text
 target/terubase/schema-context.json
 target/terubase/seed-plan.md
+```
+
+The terminal then prints a ready-to-copy prompt similar to:
+
+```text
+Generate INSERT-only seed SQL using target/terubase/schema-context.json and target/terubase/seed-plan.md. Follow the relationships, constraints, row count, and SQL dialect in those files. Return SQL only.
 ```
 
 To copy a reviewed `target/terubase/generated-seed.sql` file into Spring Boot's

@@ -36,6 +36,12 @@ class PlanMojoTest {
         assertThat(Files.readString(seedPlan))
                 .contains("# TeruBase Seed Plan")
                 .contains("No AI provider was called");
+        assertThat(mojo.nextSteps())
+                .contains("TeruBase AI prompt (copy and paste into your preferred AI)")
+                .contains("Generate INSERT-only seed SQL")
+                .contains("generated-seed.sql")
+                .contains("terubase:export-data-sql")
+                .contains("terubase:export-flyway");
     }
 
     private static MavenProject project() {
