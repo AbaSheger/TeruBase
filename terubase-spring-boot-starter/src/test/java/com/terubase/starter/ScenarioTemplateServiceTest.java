@@ -18,6 +18,9 @@ class ScenarioTemplateServiceTest {
                         "crm-demo",
                         "banking-lite-demo",
                         "task-management-demo",
+                        "inventory-management-demo",
+                        "learning-management-demo",
+                        "event-registration-demo",
                         "qa-edge-cases",
                         "frontend-dashboard-demo"
                 );
