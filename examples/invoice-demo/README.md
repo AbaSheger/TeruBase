@@ -85,19 +85,31 @@ INSERT INTO invoices (id, invoice_number, customer_id, total_amount, currency, s
 VALUES (10, 'INV-2026-0001', 1, 1200.00, 'USD', 'SENT');
 ```
 
-Then export it to a Flyway migration:
+Then export it to Spring Boot's `data.sql`:
 
 ```bash
-mvn -B -ntp terubase:export-flyway
+mvn -B -ntp terubase:export-data-sql
 ```
 
 This writes:
 
 ```text
-src/main/resources/db/migration/V999__terubase_seed_data.sql
+src/main/resources/data.sql
 ```
 
-TeruBase validates the export as `INSERT`-only before writing the Flyway file.
+TeruBase validates the export as `INSERT`-only before writing the file. Projects
+using Flyway can instead run:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+That writes
+`src/main/resources/db/migration/V999__terubase_seed_data.sql`.
+
+The demo sets `spring.jpa.defer-datasource-initialization=true` because Hibernate
+creates its tables with `ddl-auto: create-drop`. This makes Spring load
+`data.sql` after those tables exist.
 
 ## Optional Runtime Playground
 

@@ -23,7 +23,7 @@ final class InsertOnlySqlValidator {
         for (String statement : statements) {
             String normalized = statement.stripLeading().toLowerCase();
             if (!normalized.startsWith("insert ")) {
-                throw new MojoExecutionException("TeruBase Flyway export only accepts INSERT statements.");
+                throw new MojoExecutionException("TeruBase SQL export only accepts INSERT statements.");
             }
         }
     }

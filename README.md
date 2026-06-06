@@ -23,8 +23,8 @@
 
 TeruBase turns Spring Boot/JPA entity metadata into a repeatable seed-data
 workflow: scan entities, create a seed plan, validate `INSERT`-only SQL, and
-export Flyway-ready files for local development, demos, QA scenarios, and CI
-fixtures.
+export Spring Boot `data.sql` or Flyway-ready files for local development,
+demos, QA scenarios, and CI fixtures.
 
 > From JPA entities to realistic runnable seed data in minutes.
 
@@ -50,15 +50,25 @@ target/terubase/seed-plan.md
 
 The plugin does not generate row values or call an AI provider. Create
 `target/terubase/generated-seed.sql` yourself or with an AI assistant, review
-it, then export it into a Flyway migration:
+it, then export it as Spring Boot's familiar `data.sql`:
 
 ```bash
-mvn -B -ntp terubase:export-flyway
+mvn -B -ntp terubase:export-data-sql
 ```
 
 ```text
-src/main/resources/db/migration/V999__terubase_seed_data.sql
+src/main/resources/data.sql
 ```
+
+If Hibernate creates your schema with `spring.jpa.hibernate.ddl-auto`, also set
+`spring.jpa.defer-datasource-initialization=true` so Spring runs `data.sql`
+after the tables exist.
+
+Projects using Flyway can instead run `mvn -B -ntp terubase:export-flyway`.
+
+> `terubase:export-data-sql` is available on `main` and will be included in the
+> next Maven Central release. Released version `0.1.0` supports
+> `terubase:export-flyway`.
 
 TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
@@ -70,7 +80,7 @@ not replace migration tools.
 
 ## Why TeruBase?
 
-- Replace stale manual `data.sql` work with a repeatable workflow.
+- Build a safer, repeatable workflow around Spring Boot `data.sql`.
 - Generate relationship-aware seed plans from real JPA entities.
 - Keep seed SQL reviewable before it reaches Flyway or CI.
 - Block destructive SQL and accept only `INSERT` statements.
@@ -88,7 +98,7 @@ TeruBase adds the project-specific parts around generation:
 - captures tables, columns, enums, IDs, and common relationship types
 - creates a reusable seed plan from that metadata
 - validates reviewed SQL as `INSERT`-only
-- exports seed data into migration-friendly files
+- exports seed data into `data.sql` or a Flyway migration
 - keeps AI optional and export-first
 
 Use an AI assistant if you want help drafting SQL. Use TeruBase when you want a
@@ -130,18 +140,35 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-To copy a reviewed `target/terubase/generated-seed.sql` file into a Flyway
-migration:
+To copy a reviewed `target/terubase/generated-seed.sql` file into Spring Boot's
+`data.sql`:
 
 ```bash
-mvn -B -ntp terubase:export-flyway
+mvn -B -ntp terubase:export-data-sql
 ```
 
 This writes:
 
 ```text
-src/main/resources/db/migration/V999__terubase_seed_data.sql
+src/main/resources/data.sql
 ```
+
+For applications where Hibernate creates the schema, configure:
+
+```yaml
+spring:
+  jpa:
+    defer-datasource-initialization: true
+```
+
+For a Flyway migration instead:
+
+```bash
+mvn -B -ntp terubase:export-flyway
+```
+
+The `export-data-sql` goal is currently available from the source build and will
+ship in the next Maven Central release.
 
 AI generation is not built into the Maven plugin. You can use any AI assistant
 to draft SQL from the generated artifacts, or use the optional runtime starter's
@@ -199,7 +226,7 @@ The matching `seed-plan.md` summarizes the workflow:
 - Populate every nullable=false field.
 ```
 
-After review, `terubase:export-flyway` copies validated SQL into a Flyway file:
+After review, `terubase:export-data-sql` copies validated SQL into `data.sql`:
 
 ```sql
 -- TeruBase seed data
@@ -269,18 +296,20 @@ examples/invoice-demo/target/terubase/schema-context.json
 examples/invoice-demo/target/terubase/seed-plan.md
 ```
 
-To export reviewed SQL to Flyway, place reviewed `INSERT` statements in
+To export reviewed SQL to `data.sql`, place reviewed `INSERT` statements in
 `examples/invoice-demo/target/terubase/generated-seed.sql`, then run:
 
 ```bash
-mvn -B -ntp terubase:export-flyway
+mvn -B -ntp terubase:export-data-sql
 ```
 
 This writes:
 
 ```text
-examples/invoice-demo/src/main/resources/db/migration/V999__terubase_seed_data.sql
+examples/invoice-demo/src/main/resources/data.sql
 ```
+
+Use `mvn -B -ntp terubase:export-flyway` instead when the project uses Flyway.
 
 You can also run the example Spring Boot app and use the local runtime
 playground endpoints:
@@ -307,7 +336,7 @@ flowchart LR
 
 The plugin workflow mirrors the planning and export parts at build time: JPA
 entities become schema context and seed plans, then reviewed SQL becomes a
-validated Flyway file. The plugin does not call an AI provider.
+validated `data.sql` or Flyway file. The plugin does not call an AI provider.
 
 ## Endpoints
 

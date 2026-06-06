@@ -33,15 +33,22 @@ target/terubase/seed-plan.md
 
 Write the SQL yourself or use any AI assistant to draft it from those
 artifacts. After reviewing it, save it as
-`target/terubase/generated-seed.sql` and export it:
+`target/terubase/generated-seed.sql` and export it to Spring Boot `data.sql`:
+
+```bash
+mvn -B -ntp terubase:export-data-sql
+```
+
+For a Flyway migration instead, run:
 
 ```bash
 mvn -B -ntp terubase:export-flyway
 ```
 
-TeruBase validates the SQL as `INSERT`-only and writes:
+TeruBase validates the SQL as `INSERT`-only and writes either:
 
 ```text
+src/main/resources/data.sql
 src/main/resources/db/migration/V999__terubase_seed_data.sql
 ```
 
@@ -52,7 +59,7 @@ src/main/resources/db/migration/V999__terubase_seed_data.sql
 - Enum, ID, column, and common relationship metadata
 - Repeatable plan artifacts in `target/terubase`
 - `INSERT`-only SQL validation
-- Flyway-ready export
+- Spring Boot `data.sql` and Flyway-ready export
 - Local-first workflow that does not require production data
 - Optional AI usage instead of an AI-only workflow
 

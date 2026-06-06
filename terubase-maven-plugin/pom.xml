@@ -15,7 +15,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>TeruBase Maven Plugin</name>
-    <description>Build-time TeruBase seed-plan generator for Maven projects.</description>
+    <description>Build-time TeruBase seed planning and safe SQL export for Maven projects.</description>
 
     <dependencies>
         <dependency>

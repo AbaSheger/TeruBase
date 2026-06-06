@@ -3,8 +3,9 @@
 > Status: historical implementation plan. Most of the phases below have been
 > implemented. Current user-facing behavior and commands are documented in the
 > project [README](../README.md). The Maven prototype shipped with
-> `terubase:plan` and `terubase:export-flyway`; entity scanning is part of the
-> `plan` goal rather than a separate `terubase:scan` goal.
+> `terubase:plan`, `terubase:export-data-sql`, and `terubase:export-flyway`;
+> entity scanning is part of the `plan` goal rather than a separate
+> `terubase:scan` goal.
 
 Implement each phase as a small, testable change. Run:
 
@@ -235,6 +236,7 @@ optional local playground and should not be removed.
 ### Plugin Goals
 
 - `terubase:plan` scans compiled entities and writes plan artifacts
+- `terubase:export-data-sql`
 - `terubase:export-flyway`
 
 ### First Scope
@@ -259,11 +261,12 @@ optional local playground and should not be removed.
   `target/terubase/seed-plan.md`.
 - `terubase:export-flyway` prototypes a Flyway-oriented export path without
   replacing Flyway or Liquibase.
-- `terubase:plan` and `terubase:export-flyway` do not use AI tokens.
+- `terubase:export-data-sql` writes validated SQL to Spring Boot's `data.sql`.
+- Plugin plan and export goals do not use AI tokens.
 - The plugin complements Flyway and Liquibase; it does not replace them.
 - AI generation remains optional and provider-agnostic in future work.
-- Future output direction supports Flyway, Liquibase, `data.sql`,
-  Testcontainers, and CI workflows.
+- Future output direction supports Liquibase, Testcontainers, and additional CI
+  workflows.
 
 ### Tests to Add
 
@@ -293,5 +296,5 @@ optional local playground and should not be removed.
   endpoint, `POST /terubase/api/execute`.
 - Runtime starter usage remains useful for local exploration, while the Maven
   plugin is the primary adoption path. The current plugin supports plan
-  artifacts and validated Flyway export; Liquibase, `data.sql`, Testcontainers,
-  and broader CI outputs remain future work.
+  artifacts plus validated `data.sql` and Flyway exports; Liquibase,
+  Testcontainers, and broader CI outputs remain future work.

@@ -40,8 +40,9 @@ plans into `target/terubase`, and export artifacts that complement existing
 migration and test workflows. The runtime starter remains useful as an optional
 local playground, but it should not be the primary adoption path.
 
-`terubase:plan` and `terubase:export-flyway` should not use AI tokens. AI
-generation should be optional, provider-agnostic, and export-first when used.
+`terubase:plan`, `terubase:export-data-sql`, and `terubase:export-flyway` do not
+use AI tokens. AI generation should be optional, provider-agnostic, and
+export-first when used.
 
 ## What TeruBase Is Not
 
@@ -89,7 +90,7 @@ These should not complicate the local starter before the core workflow is proven
    mapping patterns.
 3. Make the plan-to-reviewed-SQL workflow clearer in documentation and demos.
 4. Keep AI generation optional, provider-agnostic, and export-first.
-5. Add output formats only after Flyway export usage is validated.
+5. Validate both familiar Spring Boot `data.sql` and versioned Flyway exports.
 6. Keep the runtime starter stable as an optional local playground.
 7. Do not add a frontend now.
 
