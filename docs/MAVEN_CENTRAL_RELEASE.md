@@ -100,9 +100,9 @@ mvn -B -ntp -Pcentral-release '-Dgpg.skip=true' clean package
 
 ## Publish
 
-Maven Central releases must not use a `-SNAPSHOT` version. Set the parent,
-starter, plugin, and example references to the release version first, for
-example `0.1.0`.
+Maven Central releases must not use a `-SNAPSHOT` version. For a manual local
+release, set the reactor parent and module versions to the release version, for
+example `0.1.0`. The invoice example is not part of the published reactor.
 
 Then deploy with the release profile:
 
@@ -117,8 +117,8 @@ deployment should be reviewed and published manually at:
 https://central.sonatype.com/publishing/deployments
 ```
 
-After publishing, bump the project back to the next development version, for
-example `0.1.1-SNAPSHOT`.
+After a manual local release, bump the project back to the next development
+version, for example `0.1.1-SNAPSHOT`.
 
 ## Publish With GitHub Actions
 
@@ -130,3 +130,5 @@ source jars, create Javadoc jars, and sign artifacts.
 Use `publish=true` only after the dry run passes and the namespace is verified
 in the Central Portal. The workflow changes the Maven version only inside the
 workflow checkout; it does not commit release-version changes back to `main`.
+After validation succeeds, publish the deployment manually in the Central
+Portal because the release profile uses `autoPublish=false`.

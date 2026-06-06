@@ -31,7 +31,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-After seed SQL is reviewed, export it:
+Write the SQL yourself or use any AI assistant to draft it from those
+artifacts. After reviewing it, save it as
+`target/terubase/generated-seed.sql` and export it:
 
 ```bash
 mvn -B -ntp terubase:export-flyway
@@ -47,12 +49,16 @@ src/main/resources/db/migration/V999__terubase_seed_data.sql
 
 - Project metadata from compiled JPA entities
 - Relationship and insert-order hints
-- Enum, ID, column, and join metadata
+- Enum, ID, column, and common relationship metadata
 - Repeatable plan artifacts in `target/terubase`
 - `INSERT`-only SQL validation
 - Flyway-ready export
 - Local-first workflow that does not require production data
 - Optional AI usage instead of an AI-only workflow
+
+The Maven plugin does not generate row values or call an AI provider. The
+optional runtime starter includes a separate OpenAI-compatible generation
+endpoint.
 
 ## Positioning
 

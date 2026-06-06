@@ -72,7 +72,9 @@ Example `seed-plan.md` excerpt:
 - Insert join tables last.
 ```
 
-After reviewing seed SQL, write it to `target/terubase/generated-seed.sql`:
+Write the seed SQL yourself or draft it with an AI assistant using the generated
+schema context and plan. After reviewing it, save it as
+`target/terubase/generated-seed.sql`:
 
 ```sql
 -- TeruBase seed data

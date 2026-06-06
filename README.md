@@ -48,7 +48,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-After reviewing generated seed SQL, export it into a Flyway migration:
+The plugin does not generate row values or call an AI provider. Create
+`target/terubase/generated-seed.sql` yourself or with an AI assistant, review
+it, then export it into a Flyway migration:
 
 ```bash
 mvn -B -ntp terubase:export-flyway
@@ -83,7 +85,7 @@ That is useful, but it is not the whole workflow.
 TeruBase adds the project-specific parts around generation:
 
 - scans your compiled Spring Boot/JPA model
-- captures tables, columns, enums, IDs, relationships, and join metadata
+- captures tables, columns, enums, IDs, and common relationship types
 - creates a reusable seed plan from that metadata
 - validates reviewed SQL as `INSERT`-only
 - exports seed data into migration-friendly files
@@ -141,8 +143,9 @@ This writes:
 src/main/resources/db/migration/V999__terubase_seed_data.sql
 ```
 
-AI generation is optional future work for the plugin path and should remain
-provider-agnostic.
+AI generation is not built into the Maven plugin. You can use any AI assistant
+to draft SQL from the generated artifacts, or use the optional runtime starter's
+OpenAI-compatible endpoint.
 
 ### Example Output
 
@@ -302,9 +305,9 @@ flowchart LR
     F --> G
 ```
 
-The plugin workflow mirrors the same shape at build time: JPA entities become
-schema context, seed plans, and exportable artifacts without requiring an AI
-provider.
+The plugin workflow mirrors the planning and export parts at build time: JPA
+entities become schema context and seed plans, then reviewed SQL becomes a
+validated Flyway file. The plugin does not call an AI provider.
 
 ## Endpoints
 

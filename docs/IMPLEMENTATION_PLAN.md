@@ -1,5 +1,11 @@
 # TeruBase Implementation Plan
 
+> Status: historical implementation plan. Most of the phases below have been
+> implemented. Current user-facing behavior and commands are documented in the
+> project [README](../README.md). The Maven prototype shipped with
+> `terubase:plan` and `terubase:export-flyway`; entity scanning is part of the
+> `plan` goal rather than a separate `terubase:scan` goal.
+
 Implement each phase as a small, testable change. Run:
 
 ```bash
@@ -221,15 +227,14 @@ Close coverage gaps and simplify the implementation before broader product work.
 
 ### Goal
 
-Make the Maven plugin the preferred path for the next adoption experiment. The
-plugin should scan, plan, and export build-time artifacts that complement
+Make the Maven plugin the preferred adoption path. The plugin scans, plans, and
+exports build-time artifacts that complement
 Flyway/Liquibase and other existing seed workflows. The starter remains an
 optional local playground and should not be removed.
 
 ### Plugin Goals
 
-- `terubase:scan`
-- `terubase:plan`
+- `terubase:plan` scans compiled entities and writes plan artifacts
 - `terubase:export-flyway`
 
 ### First Scope
@@ -249,9 +254,9 @@ optional local playground and should not be removed.
 
 ### Acceptance Criteria
 
-- `terubase:scan` discovers JPA entity context and writes
-  `target/terubase/schema-context.json`.
-- `terubase:plan` writes a readable `target/terubase/seed-plan.md`.
+- `terubase:plan` discovers JPA entity context and writes
+  `target/terubase/schema-context.json` plus a readable
+  `target/terubase/seed-plan.md`.
 - `terubase:export-flyway` prototypes a Flyway-oriented export path without
   replacing Flyway or Liquibase.
 - `terubase:plan` and `terubase:export-flyway` do not use AI tokens.
@@ -264,7 +269,7 @@ optional local playground and should not be removed.
 
 - Plugin goal execution tests for generated files
 - Deterministic output tests
-- No-AI-call regression test for scan, plan, and export goals
+- No-AI-call regression test for plan and export goals
 
 ### What Not to Do
 
@@ -286,6 +291,7 @@ optional local playground and should not be removed.
   validated `INSERT` batch against TeruBase's isolated H2 database.
   `terubase.sql-execution-enabled` separately controls the direct SQL console
   endpoint, `POST /terubase/api/execute`.
-- Runtime starter usage remains useful for local exploration, but the next
-  adoption experiment is a Maven plugin that generates build-time artifacts for
-  Flyway, Liquibase, `data.sql`, Testcontainers, and CI.
+- Runtime starter usage remains useful for local exploration, while the Maven
+  plugin is the primary adoption path. The current plugin supports plan
+  artifacts and validated Flyway export; Liquibase, `data.sql`, Testcontainers,
+  and broader CI outputs remain future work.
