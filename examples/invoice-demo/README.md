@@ -14,13 +14,8 @@ separate isolated H2 datasource for optional seed execution.
 
 ## Maven Plugin Workflow
 
-From the repository root, install the local TeruBase build:
-
-```bash
-mvn -B -ntp clean install
-```
-
-Generate non-AI seed-plan artifacts from the invoice demo:
+TeruBase `0.1.1` is declared in the demo `pom.xml`. Generate non-AI seed-plan
+artifacts from the invoice demo:
 
 ```bash
 cd examples/invoice-demo

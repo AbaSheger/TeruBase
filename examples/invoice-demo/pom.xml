@@ -21,7 +21,7 @@
     <properties>
         <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
-        <terubase.version>0.1.0-SNAPSHOT</terubase.version>
+        <terubase.version>0.1.1</terubase.version>
     </properties>
 
     <dependencies>
@@ -58,6 +58,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>io.github.abasheger</groupId>
+                <artifactId>terubase-maven-plugin</artifactId>
+                <version>${terubase.version}</version>
+                <configuration>
+                    <entityBasePackage>com.terubase.starter.examples.invoice</entityBasePackage>
+                </configuration>
             </plugin>
         </plugins>
     </build>

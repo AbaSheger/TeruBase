@@ -13,8 +13,8 @@
   <img alt="Spring Boot 3.4+" src="https://img.shields.io/badge/Spring%20Boot-3.4%2B-brightgreen">
   <img alt="Maven" src="https://img.shields.io/badge/Maven-build-orange">
   <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green">
-  <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.0">
-    <img alt="Maven Central" src="https://img.shields.io/badge/Maven%20Central-0.1.0-blue">
+  <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.1">
+    <img alt="Maven Central" src="https://img.shields.io/badge/Maven%20Central-0.1.1-blue">
   </a>
   <a href="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml">
     <img alt="Build status" src="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml/badge.svg">
@@ -35,7 +35,7 @@ and writes reviewable artifacts without requiring an AI account:
 <plugin>
   <groupId>io.github.abasheger</groupId>
   <artifactId>terubase-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </plugin>
 ```
 
@@ -68,10 +68,6 @@ If Hibernate creates your schema with `spring.jpa.hibernate.ddl-auto`, also set
 after the tables exist.
 
 Projects using Flyway can instead run `mvn -B -ntp terubase:export-flyway`.
-
-> `terubase:export-data-sql` is available on `main` and will be included in the
-> next Maven Central release. Released version `0.1.0` supports
-> `terubase:export-flyway`.
 
 TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
@@ -121,7 +117,7 @@ Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
     <plugin>
       <groupId>io.github.abasheger</groupId>
       <artifactId>terubase-maven-plugin</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1</version>
       <configuration>
         <entityBasePackage>com.example.yourapp</entityBasePackage>
       </configuration>
@@ -175,9 +171,6 @@ For a Flyway migration instead:
 ```bash
 mvn -B -ntp terubase:export-flyway
 ```
-
-The `export-data-sql` goal is currently available from the source build and will
-ship in the next Maven Central release.
 
 AI generation is not built into the Maven plugin. You can use any AI assistant
 to draft SQL from the generated artifacts, or use the optional runtime starter's
@@ -253,7 +246,7 @@ playground endpoints:
 <dependency>
     <groupId>io.github.abasheger</groupId>
     <artifactId>terubase-spring-boot-starter</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -285,13 +278,7 @@ AI-generated SQL. The generated request keeps `execute=false`.
 
 ## Try the Invoice Demo
 
-Install the local build first:
-
-```bash
-mvn -B -ntp clean install
-```
-
-Then generate Maven plugin artifacts from the invoice demo:
+Generate Maven plugin artifacts from the invoice demo:
 
 ```bash
 cd examples/invoice-demo
