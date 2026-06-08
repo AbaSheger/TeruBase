@@ -80,11 +80,20 @@ class SeedPlanServiceTest {
         assertThat(response.recommendedMockRequest()).containsEntry("execute", false);
     }
 
+    @Test
+    void rejectsCountAboveMockLimit() {
+        assertThatThrownBy(() -> service(List.of()).generate(null, null, 101, null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("terubase.max-mock-rows=100");
+    }
+
     private static SeedPlanService service(List<Map<String, Object>> entities) {
+        TeruBaseProperties properties = new TeruBaseProperties();
         return new SeedPlanService(
                 new TestSchemaService(entities),
                 new ScenarioTemplateService(),
-                new ObjectMapper()
+                new ObjectMapper(),
+                properties
         );
     }
 

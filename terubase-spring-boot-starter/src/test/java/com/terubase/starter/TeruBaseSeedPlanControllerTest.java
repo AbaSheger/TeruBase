@@ -20,7 +20,12 @@ class TeruBaseSeedPlanControllerTest {
     @BeforeEach
     void setUp() {
         SeedPlanService seedPlanService =
-                new SeedPlanService(new EmptySchemaService(), new ScenarioTemplateService(), new ObjectMapper());
+                new SeedPlanService(
+                        new EmptySchemaService(),
+                        new ScenarioTemplateService(),
+                        new ObjectMapper(),
+                        new TeruBaseProperties()
+                );
         mockMvc = standaloneSetup(new TeruBaseSeedPlanController(seedPlanService)).build();
     }
 
@@ -39,6 +44,13 @@ class TeruBaseSeedPlanControllerTest {
     @Test
     void returnsBadRequestForUnknownScenarioId() throws Exception {
         mockMvc.perform(get("/terubase/api/seed-plan").param("scenarioId", "missing"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("invalid_seed_plan_request"));
+    }
+
+    @Test
+    void returnsBadRequestWhenCountExceedsMockLimit() throws Exception {
+        mockMvc.perform(get("/terubase/api/seed-plan").param("count", "101"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("invalid_seed_plan_request"));
     }

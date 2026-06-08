@@ -71,6 +71,11 @@ public class PlanMojo extends AbstractMojo {
         try {
             Files.createDirectories(outputPath());
             List<Map<String, Object>> entities = scanEntities();
+            if (entities.isEmpty()) {
+                throw new MojoExecutionException(
+                        "No JPA entities were found. Compile the entity module and check terubase.entityBasePackage."
+                );
+            }
             writeSchemaContext(entities);
             writeSeedPlan(entities);
             getLog().info("Generated " + outputPath().resolve("schema-context.json"));

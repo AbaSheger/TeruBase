@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @AutoConfiguration
 @Configuration
 @EnableConfigurationProperties(TeruBaseProperties.class)
-@ConditionalOnProperty(name = "terubase.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "terubase.enabled", havingValue = "true")
 @Conditional(TeruBaseLocalOnlyCondition.class)
 public class TeruBaseAutoConfiguration {
 
@@ -69,9 +69,10 @@ public class TeruBaseAutoConfiguration {
     public SeedPlanService seedPlanService(
             TeruBaseSchemaService schemaService,
             ScenarioTemplateService scenarioTemplateService,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            TeruBaseProperties properties
     ) {
-        return new SeedPlanService(schemaService, scenarioTemplateService, objectMapper);
+        return new SeedPlanService(schemaService, scenarioTemplateService, objectMapper, properties);
     }
 
     @Bean

@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "terubase")
 public class TeruBaseProperties {
 
-    private boolean enabled = true;
+    private boolean enabled = false;
     private String jdbcUrl = "jdbc:h2:mem:terubase_isolated_db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH";
     private String username = "sa";
     private String password = "";

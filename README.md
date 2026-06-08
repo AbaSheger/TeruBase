@@ -209,6 +209,8 @@ OpenAI-compatible endpoint.
 - SQL checking is syntactic and `INSERT`-only. It does not connect to the host
   database or verify tables, columns, constraints, values, or dialect syntax.
 - Export goals overwrite their configured output file.
+- `terubase:plan` fails when it discovers no entities. Compile the module that
+  contains the entities and verify `entityBasePackage` when this happens.
 
 ### Example Output
 
@@ -294,6 +296,8 @@ terubase:
   entity-base-package: com.example.store.domain
   sql-execution-enabled: false
 ```
+
+The runtime starter is disabled unless `terubase.enabled=true` is set.
 
 Start the application with the `local` profile, then inspect the built-in
 scenarios:
@@ -418,10 +422,13 @@ terubase:
 ```
 
 TeruBase auto-configuration is blocked when the `prod` or `production` Spring
-profile is active. An intentional override requires:
+profile is active. It is also disabled by default in every profile. Enable it
+explicitly for local use with `terubase.enabled=true`. An intentional
+production override requires both:
 
 ```yaml
 terubase:
+  enabled: true
   force-enable-in-production: true
 ```
 
@@ -472,7 +479,8 @@ GET /terubase/api/seed-plan?scenarioId=saas-billing-demo&count=30
 
 The response combines scenario intent with discovered metadata and returns a
 `schemaPrompt` plus a `recommendedMockRequest`. This endpoint does not require
-an API key and does not call AI.
+an API key and does not call AI. Its `count` cannot exceed
+`terubase.max-mock-rows`, so the recommended request is accepted by `/mock`.
 
 ### Generate Export-First Seed SQL
 

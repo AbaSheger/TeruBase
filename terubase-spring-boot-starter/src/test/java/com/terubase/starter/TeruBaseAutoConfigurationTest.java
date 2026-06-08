@@ -30,7 +30,10 @@ class TeruBaseAutoConfigurationTest {
 
     @Test
     void enablesTeruBaseForLocalProfile() {
-        contextRunner.withPropertyValues("spring.profiles.active=local")
+        contextRunner.withPropertyValues(
+                        "spring.profiles.active=local",
+                        "terubase.enabled=true"
+                )
                 .run(context -> {
                     assertThat(context).hasSingleBean(TeruBaseController.class);
                     assertThat(context).hasSingleBean(TeruBaseSchemaController.class);
@@ -42,14 +45,26 @@ class TeruBaseAutoConfigurationTest {
     }
 
     @Test
+    void remainsDisabledUntilExplicitlyEnabled() {
+        contextRunner.withPropertyValues("spring.profiles.active=local")
+                .run(context -> assertThat(context).doesNotHaveBean(TeruBaseController.class));
+    }
+
+    @Test
     void blocksTeruBaseForProdProfile() {
-        contextRunner.withPropertyValues("spring.profiles.active=prod")
+        contextRunner.withPropertyValues(
+                        "spring.profiles.active=prod",
+                        "terubase.enabled=true"
+                )
                 .run(context -> assertThat(context).doesNotHaveBean(TeruBaseScenarioController.class));
     }
 
     @Test
     void blocksTeruBaseForProductionProfile() {
-        contextRunner.withPropertyValues("spring.profiles.active=production")
+        contextRunner.withPropertyValues(
+                        "spring.profiles.active=production",
+                        "terubase.enabled=true"
+                )
                 .run(context -> assertThat(context).doesNotHaveBean(TeruBaseScenarioController.class));
     }
 
@@ -57,6 +72,7 @@ class TeruBaseAutoConfigurationTest {
     void forceEnableOverridesProductionProfileGuard() {
         contextRunner.withPropertyValues(
                         "spring.profiles.active=production",
+                        "terubase.enabled=true",
                         "terubase.force-enable-in-production=true"
                 )
                 .run(context -> {
@@ -68,7 +84,7 @@ class TeruBaseAutoConfigurationTest {
 
     @Test
     void defaultsDirectSqlExecutionToDisabled() {
-        contextRunner.run(context ->
+        contextRunner.withPropertyValues("terubase.enabled=true").run(context ->
                 assertThat(context.getBean(TeruBaseProperties.class).isSqlExecutionEnabled()).isFalse());
     }
 
@@ -77,7 +93,8 @@ class TeruBaseAutoConfigurationTest {
         JdbcDataSource hostDataSource = new JdbcDataSource();
         hostDataSource.setURL("jdbc:h2:mem:host_application_db");
 
-        contextRunner.withBean("hostDataSource", DataSource.class, () -> hostDataSource)
+        contextRunner.withPropertyValues("terubase.enabled=true")
+                .withBean("hostDataSource", DataSource.class, () -> hostDataSource)
                 .run(context -> {
                     assertThat(context.getBeansOfType(DataSource.class)).containsOnlyKeys("hostDataSource");
                     assertThatCode(() -> assertThat(context.getBean(TeruBaseSqlService.class).status())
@@ -88,7 +105,7 @@ class TeruBaseAutoConfigurationTest {
 
     @Test
     void registersEveryDocumentedEndpointForConsumingApplications() {
-        webContextRunner.run(context -> {
+        webContextRunner.withPropertyValues("terubase.enabled=true").run(context -> {
             RequestMappingHandlerMapping mappings = context.getBean(RequestMappingHandlerMapping.class);
             Set<String> paths = mappings.getHandlerMethods().keySet().stream()
                     .flatMap(mapping -> mapping.getPatternValues().stream())

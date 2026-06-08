@@ -1,6 +1,7 @@
 package com.terubase.starter.maven;
 
 import org.apache.maven.model.Build;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PlanMojoTest {
 
@@ -42,6 +44,24 @@ class PlanMojoTest {
                 .contains("generated-seed.sql")
                 .contains("terubase:export-data-sql")
                 .contains("terubase:export-flyway");
+    }
+
+    @Test
+    void planGoalFailsWhenNoEntitiesAreFound() throws Exception {
+        Path outputDirectory = Files.createTempDirectory("terubase-empty-plan-test");
+        PlanMojo mojo = new PlanMojo();
+        set(mojo, "project", project());
+        set(mojo, "entityBasePackage", "com.example.missing");
+        set(mojo, "scenario", "Generate seed data.");
+        set(mojo, "count", 20);
+        set(mojo, "dialect", "h2-postgresql-mode");
+        set(mojo, "outputDirectory", outputDirectory.toFile());
+
+        assertThatThrownBy(mojo::execute)
+                .isInstanceOf(MojoExecutionException.class)
+                .hasMessageContaining("No JPA entities were found");
+        assertThat(outputDirectory.resolve("schema-context.json")).doesNotExist();
+        assertThat(outputDirectory.resolve("seed-plan.md")).doesNotExist();
     }
 
     private static MavenProject project() {

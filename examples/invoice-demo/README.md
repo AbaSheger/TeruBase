@@ -12,6 +12,9 @@ JPA entities:
 The application uses its own H2 datasource for the invoice app. TeruBase uses a
 separate isolated H2 datasource for optional seed execution.
 
+The runtime starter is explicitly enabled in this example's `application.yml`;
+it is disabled by default in consuming applications.
+
 ## Maven Plugin Workflow
 
 TeruBase `0.1.1` is declared in the demo `pom.xml`. Generate non-AI seed-plan

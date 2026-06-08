@@ -26,15 +26,18 @@ public class SeedPlanService {
     private final TeruBaseSchemaService schemaService;
     private final ScenarioTemplateService scenarioTemplateService;
     private final ObjectMapper objectMapper;
+    private final TeruBaseProperties properties;
 
     public SeedPlanService(
             TeruBaseSchemaService schemaService,
             ScenarioTemplateService scenarioTemplateService,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            TeruBaseProperties properties
     ) {
         this.schemaService = schemaService;
         this.scenarioTemplateService = scenarioTemplateService;
         this.objectMapper = objectMapper;
+        this.properties = properties;
     }
 
     public SeedPlanResponse generate(String scenarioId, String customScenario, int count, String dialect) {
@@ -105,9 +108,14 @@ public class SeedPlanService {
         }
     }
 
-    private static void validateCount(int count) {
+    private void validateCount(int count) {
         if (count <= 0) {
             throw new IllegalArgumentException("count must be greater than zero.");
+        }
+        if (count > properties.getMaxMockRows()) {
+            throw new IllegalArgumentException(
+                    "count must not exceed terubase.max-mock-rows=" + properties.getMaxMockRows()
+            );
         }
     }
 

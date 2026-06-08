@@ -59,6 +59,8 @@ Core promise:
 - Roll back the entire batch when execution fails.
 - Block risky endpoints in `prod` and `production` profiles unless explicitly
   force-enabled.
+- Keep runtime auto-configuration disabled unless `terubase.enabled=true` is
+  explicitly configured.
 - Keep TeruBase execution isolated from the host application's datasource.
 
 ## Current Priority
