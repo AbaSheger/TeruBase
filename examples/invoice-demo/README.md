@@ -29,8 +29,9 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-The command also prints a ready-made AI prompt and the exact next commands in
-the terminal. It does not create another prompt file or call an AI provider.
+The command also prints the files an AI tool must be able to read, a short
+prompt, and the exact next commands. It does not create another prompt file or
+call an AI provider.
 
 Example `schema-context.json` excerpt:
 
@@ -82,6 +83,10 @@ VALUES (1, 'Northstar Studio', 'billing@northstar.example', 'Stockholm', 'Sweden
 INSERT INTO invoices (id, invoice_number, customer_id, total_amount, currency, status)
 VALUES (10, 'INV-2026-0001', 1, 1200.00, 'USD', 'SENT');
 ```
+
+This SQL is a manually reviewed example. The Maven plugin does not discover the
+`@JoinColumn(name = "customer_id")` value, so SQL authors must verify physical
+column names against the application schema.
 
 Then export it to Spring Boot's `data.sql`:
 

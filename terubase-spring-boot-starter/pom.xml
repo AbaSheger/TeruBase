@@ -15,7 +15,7 @@
     <packaging>jar</packaging>
 
     <name>TeruBase Spring Boot Starter</name>
-    <description>Spring Boot-native local seed-data sandbox for JPA entity discovery, isolated H2 execution, and AI-assisted relationship-aware mock data generation.</description>
+    <description>Optional Spring Boot playground for JPA metadata inspection, OpenAI-compatible INSERT generation, export responses, and isolated H2 execution.</description>
 
     <dependencies>
         <dependency>

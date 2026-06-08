@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <name>TeruBase</name>
-    <description>Spring Boot-native local seed-data tooling for JPA entity discovery and relationship-aware seed planning.</description>
+    <description>Build-time JPA metadata planning, INSERT-only SQL checks, and data.sql or Flyway-path export.</description>
     <url>https://github.com/AbaSheger/TeruBase</url>
 
     <modules>

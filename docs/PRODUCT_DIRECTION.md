@@ -16,23 +16,22 @@ without building and maintaining fixtures by hand.
 
 ## Main Use Cases
 
-- Prepare relationship-aware metadata and seed plans from JPA entities.
-- Create realistic demo scenarios without production records.
-- Export reviewable seed artifacts for Flyway, Liquibase, `data.sql`,
-  Testcontainers, local use, and CI pipelines.
+- Prepare selected field-annotation metadata and basic seed-plan hints from JPA
+  entities.
+- Export reviewed SQL to Spring Boot `data.sql` or a Flyway migration path.
 - Inspect entity metadata before generating data.
 - Optionally use the runtime starter as a local playground.
 
 ## Product Promise
 
-> From JPA entities to realistic runnable seed data in minutes.
+> From compiled JPA entities to reviewable planning artifacts and SQL exports.
 
 ## What TeruBase Is
 
-TeruBase is a Spring Boot-native seed-data copilot. It discovers JPA entities
-and relationships, prepares schema context, builds relationship-aware seed
-plans, and exports reviewable seed artifacts that complement Flyway and
-Liquibase rather than replacing them.
+TeruBase provides Maven goals that inspect compiled JPA classes, write
+schema-context and seed-plan artifacts, check reviewed SQL as `INSERT`-only,
+and copy it to `data.sql` or a Flyway migration path. The optional runtime
+starter provides separate local HTTP and OpenAI-compatible workflows.
 
 The preferred product path is Maven-plugin and build-time workflow first: scan
 the application model during development or CI, write schema context and seed
@@ -61,10 +60,10 @@ The open-source wedge should solve one workflow well: run TeruBase from Maven
 and quickly produce reviewable schema context, seed plans, and seed artifacts
 from a Spring Boot application's JPA entities.
 
-The Maven plugin is local-first, useful without a cloud account, easy to
-inspect, and safe by default. Scenario templates, seed plans, metadata quality,
-SQL export, tests, and README examples remain important, while adoption work
-should avoid adding runtime weight to host applications.
+The Maven plugin is local-first, useful without a cloud account, and easy to
+inspect. Seed plans, metadata quality, `INSERT`-only checks, export tests, and
+README examples remain important, while adoption work should avoid adding
+runtime weight to host applications.
 
 The starter should remain available for optional local exploration and demos. It
 should not become the primary installation path.
@@ -97,7 +96,7 @@ These should not complicate the local starter before the core workflow is proven
 ## Long-Term Roadmap
 
 1. Prove the Maven plugin workflow across real Spring Boot services.
-2. Improve generation quality for common JPA relationship patterns.
+2. Improve metadata and planning quality for common JPA relationship patterns.
 3. Support reusable team scenarios and CI usage.
 4. Add provider-agnostic optional AI generation after non-AI scan, plan, and
    export workflows are valuable on their own.

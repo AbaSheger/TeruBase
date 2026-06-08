@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  A repeatable seed-data workflow for Spring Boot/JPA projects.
+  Build-time JPA metadata planning and reviewed SQL export for Maven projects.
 </p>
 
 <p align="center">
@@ -21,12 +21,10 @@
   </a>
 </p>
 
-TeruBase turns Spring Boot/JPA entity metadata into a repeatable seed-data
-workflow: scan entities, create a seed plan, validate `INSERT`-only SQL, and
-export Spring Boot `data.sql` or Flyway-ready files for local development,
-demos, QA scenarios, and CI fixtures.
-
-> From JPA entities to realistic runnable seed data in minutes.
+TeruBase is a Maven plugin that inspects compiled, field-annotated JPA entities,
+writes schema-context and seed-plan files, checks that reviewed SQL contains
+only `INSERT` statements, and copies it to Spring Boot `data.sql` or a Flyway
+migration path.
 
 The preferred path is the Maven plugin. It discovers JPA entities at build time
 and writes reviewable artifacts without requiring an AI account:
@@ -48,8 +46,8 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-The command also prints a ready-made AI prompt, the exact path where the SQL
-response should be saved, and the available export commands.
+The command also prints an AI handoff: the files an AI tool must be able to
+read, a short instruction, the expected SQL save path, and the export commands.
 
 The plugin does not generate row values or call an AI provider. Create
 `target/terubase/generated-seed.sql` yourself or with an AI assistant, review
@@ -73,30 +71,32 @@ TeruBase is local-first tooling. It is not a generic fake-data generator, an H2
 console clone, a production database API, or an enterprise test-data-management
 platform.
 
-The runtime starter remains available as an optional local playground. TeruBase
-complements Flyway and Liquibase by preparing seed artifacts for review; it does
-not replace migration tools.
+The runtime starter remains available as an optional local playground. The
+Maven plugin can copy reviewed SQL to a Flyway migration path, but it does not
+run Flyway or replace a migration tool.
 
 ## Why TeruBase?
 
-- Build a safer, repeatable workflow around Spring Boot `data.sql`.
-- Generate relationship-aware seed plans from real JPA entities.
-- Keep seed SQL reviewable before it reaches Flyway or CI.
-- Block destructive SQL and accept only `INSERT` statements.
-- Make local apps and demos look realistic without production data.
-- Complement Flyway and Liquibase instead of replacing them.
+- Write deterministic JSON and Markdown artifacts from compiled JPA classes.
+- Record IDs, generated values, Java enums, explicit `@Column` metadata, and
+  common relationship annotation types.
+- Print a clear handoff for creating SQL with a developer's chosen AI tool.
+- Reject blank exports and statements that are not `INSERT` statements.
+- Copy reviewed SQL to Spring Boot `data.sql` or a fixed Flyway migration path.
 
 ## Why Not Just ChatGPT?
 
 ChatGPT, Claude, Cursor, and Copilot can write example `INSERT` statements.
 That is useful, but it is not the whole workflow.
 
-TeruBase adds the project-specific parts around generation:
+The Maven plugin adds project-specific context around SQL written by a developer
+or AI tool:
 
 - scans your compiled Spring Boot/JPA model
-- captures tables, columns, enums, IDs, and common relationship types
-- creates a reusable seed plan from that metadata
-- validates reviewed SQL as `INSERT`-only
+- records explicit `@Table` and `@Column` names, Java enums, IDs, generated
+  values, and common relationship annotation types
+- creates reusable schema-context and seed-plan artifacts
+- checks reviewed SQL as `INSERT`-only
 - exports seed data into `data.sql` or a Flyway migration
 - keeps AI optional and export-first
 
@@ -126,7 +126,7 @@ Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
 </build>
 ```
 
-Generate non-AI seed-plan artifacts from the project metadata:
+Generate non-AI planning artifacts from compiled project classes:
 
 ```bash
 mvn -B -ntp compile terubase:plan
@@ -139,11 +139,15 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-The terminal then prints a ready-to-copy prompt similar to:
+The terminal prints this instruction with absolute paths to the two generated
+files:
 
 ```text
-Generate INSERT-only seed SQL using target/terubase/schema-context.json and target/terubase/seed-plan.md. Follow the relationships, constraints, row count, and SQL dialect in those files. Return SQL only.
+Generate INSERT-only seed SQL using <schema-context.json> and <seed-plan.md>. Follow the relationships, constraints, row count, and SQL dialect in those files. Return SQL only.
 ```
+
+A terminal AI agent may be able to read those paths. For a browser chat, upload
+both files first; pasting local paths alone does not give the chat access.
 
 To copy a reviewed `target/terubase/generated-seed.sql` file into Spring Boot's
 `data.sql`:
@@ -175,6 +179,24 @@ mvn -B -ntp terubase:export-flyway
 AI generation is not built into the Maven plugin. You can use any AI assistant
 to draft SQL from the generated artifacts, or use the optional runtime starter's
 OpenAI-compatible endpoint.
+
+### Maven Plugin Limits
+
+- Entity inspection supports field annotations, not JPA property access.
+- An explicit `@Table` name is recorded; otherwise `tableName` falls back to the
+  Java class name. Fields always include their Java names, while column metadata
+  is present only for explicit `@Column` annotations. The plugin does not apply
+  a Hibernate physical naming strategy.
+- The plugin records common relationship annotation types, but not `@JoinColumn`
+  or `@JoinTable` details.
+- The plan always includes generic insert-order text, including a join-table
+  hint. Those lines are instructions, not proof that matching metadata was
+  discovered, and they are not a foreign-key dependency graph.
+- The configured row count and dialect are written into the plan for the SQL
+  author or AI tool; the plugin does not enforce either one.
+- SQL checking is syntactic and `INSERT`-only. It does not connect to the host
+  database or verify tables, columns, constraints, values, or dialect syntax.
+- Export goals overwrite their configured output file.
 
 ### Example Output
 
@@ -210,7 +232,8 @@ A compact `schema-context.json` looks like this:
 }
 ```
 
-The matching `seed-plan.md` summarizes the workflow:
+The matching `seed-plan.md` records the configured scenario, count, dialect,
+discovered entities, and basic hints:
 
 ```markdown
 # TeruBase Seed Plan
@@ -228,7 +251,8 @@ The matching `seed-plan.md` summarizes the workflow:
 - Populate every nullable=false field.
 ```
 
-After review, `terubase:export-data-sql` copies validated SQL into `data.sql`:
+After review, `terubase:export-data-sql` checks the file as `INSERT`-only and
+copies it into `data.sql`:
 
 ```sql
 -- TeruBase seed data
@@ -330,9 +354,10 @@ flowchart LR
     F --> G
 ```
 
-The plugin workflow mirrors the planning and export parts at build time: JPA
-entities become schema context and seed plans, then reviewed SQL becomes a
-validated `data.sql` or Flyway file. The plugin does not call an AI provider.
+The plugin workflow is build-time only: compiled JPA classes become
+schema-context and seed-plan files, then reviewed SQL is checked and copied to
+`data.sql` or the configured Flyway path. The plugin does not call an AI
+provider.
 
 ## Endpoints
 

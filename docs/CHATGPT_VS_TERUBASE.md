@@ -31,8 +31,8 @@ target/terubase/schema-context.json
 target/terubase/seed-plan.md
 ```
 
-It also prints a ready-to-copy AI prompt and the expected SQL save path directly
-in the terminal.
+It also prints the files an AI tool must be able to read, a short prompt, and the
+expected SQL save path directly in the terminal.
 
 Write the SQL yourself or use any AI assistant to draft it from those
 artifacts. After reviewing it, save it as
@@ -57,18 +57,22 @@ src/main/resources/db/migration/V999__terubase_seed_data.sql
 
 ## What TeruBase Adds
 
-- Project metadata from compiled JPA entities
-- Relationship and insert-order hints
-- Enum, ID, column, and common relationship metadata
+- Selected field-annotation metadata from compiled JPA entities
+- Basic relationship and insert-order hints
+- Java enum, ID, generated-value, explicit `@Table`/`@Column`, and common
+  relationship annotation metadata
 - Repeatable plan artifacts in `target/terubase`
 - `INSERT`-only SQL validation
-- Spring Boot `data.sql` and Flyway-ready export
+- Spring Boot `data.sql` export and copy to a fixed Flyway migration path
 - Local-first workflow that does not require production data
 - Optional AI usage instead of an AI-only workflow
 
 The Maven plugin does not generate row values or call an AI provider. The
 optional runtime starter includes a separate OpenAI-compatible generation
 endpoint.
+
+The plugin does not apply Hibernate naming strategies, inspect property-access
+mappings, build a full foreign-key graph, or validate SQL against a database.
 
 ## Positioning
 

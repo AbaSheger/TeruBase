@@ -296,5 +296,5 @@ optional local playground and should not be removed.
   endpoint, `POST /terubase/api/execute`.
 - Runtime starter usage remains useful for local exploration, while the Maven
   plugin is the primary adoption path. The current plugin supports plan
-  artifacts plus validated `data.sql` and Flyway exports; Liquibase,
+  artifacts plus `INSERT`-only checked `data.sql` and Flyway exports; Liquibase,
   Testcontainers, and broader CI outputs remain future work.
