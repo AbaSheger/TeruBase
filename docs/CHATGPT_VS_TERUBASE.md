@@ -48,7 +48,8 @@ For a Flyway migration instead, run:
 mvn -B -ntp terubase:export-flyway
 ```
 
-TeruBase validates the SQL as `INSERT`-only and writes either:
+TeruBase checks that the SQL contains only `INSERT` statements and writes
+either:
 
 ```text
 src/main/resources/data.sql
@@ -62,7 +63,7 @@ src/main/resources/db/migration/V999__terubase_seed_data.sql
 - Java enum, ID, generated-value, explicit `@Table`/`@Column`, and common
   relationship annotation metadata
 - Repeatable plan artifacts in `target/terubase`
-- `INSERT`-only SQL validation
+- `INSERT`-only SQL checks
 - Spring Boot `data.sql` export and copy to a fixed Flyway migration path
 - Local-first workflow that does not require production data
 - Optional AI usage instead of an AI-only workflow
@@ -72,7 +73,10 @@ optional runtime starter includes a separate OpenAI-compatible generation
 endpoint.
 
 The plugin does not apply Hibernate naming strategies, inspect property-access
-mappings, build a full foreign-key graph, or validate SQL against a database.
+mappings, exclude `@Transient` fields, aggregate entities from child Maven
+modules, build a full foreign-key graph, or validate SQL against a database. It
+recognizes Jakarta Persistence annotations, not legacy `javax.persistence`
+annotations.
 
 ## Positioning
 

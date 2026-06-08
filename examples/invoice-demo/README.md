@@ -84,9 +84,11 @@ INSERT INTO invoices (id, invoice_number, customer_id, total_amount, currency, s
 VALUES (10, 'INV-2026-0001', 1, 1200.00, 'USD', 'SENT');
 ```
 
-This SQL is a manually reviewed example. The Maven plugin does not discover the
-`@JoinColumn(name = "customer_id")` value, so SQL authors must verify physical
-column names against the application schema.
+This SQL is a manually reviewed example. The Maven plugin does not discover
+`@JoinColumn` names such as `customer_id`. It also records a Java field name
+when an `@Column` annotation does not declare an explicit name, without applying
+Hibernate's physical naming strategy. SQL authors must therefore verify all
+physical table and column names against the application schema.
 
 Then export it to Spring Boot's `data.sql`:
 
@@ -100,8 +102,8 @@ This writes:
 src/main/resources/data.sql
 ```
 
-TeruBase validates the export as `INSERT`-only before writing the file. Projects
-using Flyway can instead run:
+TeruBase checks that the export contains only `INSERT` statements before
+writing the file. Projects using Flyway can instead run:
 
 ```bash
 mvn -B -ntp terubase:export-flyway
@@ -163,8 +165,8 @@ curl -X POST http://localhost:8080/terubase/api/mock \
   }'
 ```
 
-With `execute=false`, TeruBase returns validated `INSERT` statements and export
-SQL, but does not run them.
+With `execute=false`, TeruBase returns `INSERT`-only checked statements and
+export SQL, but does not run them.
 
 ## Export SQL
 

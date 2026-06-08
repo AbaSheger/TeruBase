@@ -6,6 +6,10 @@
 > `terubase:plan`, `terubase:export-data-sql`, and `terubase:export-flyway`;
 > entity scanning is part of the `plan` goal rather than a separate
 > `terubase:scan` goal.
+>
+> The acceptance criteria below record historical implementation targets. They
+> are not guarantees of current behavior; use the README and source for the
+> current supported surface.
 
 Implement each phase as a small, testable change. Run:
 
@@ -292,7 +296,7 @@ optional local playground and should not be removed.
   avoid request-body logging. Future generation should be optional,
   provider-agnostic, and separate from non-AI scan, plan, and export workflows.
 - Setting `"execute": true` on `POST /terubase/api/mock` explicitly runs the
-  validated `INSERT` batch against TeruBase's isolated H2 database.
+  `INSERT`-only checked batch against TeruBase's isolated H2 database.
   `terubase.sql-execution-enabled` separately controls the direct SQL console
   endpoint, `POST /terubase/api/execute`.
 - Runtime starter usage remains useful for local exploration, while the Maven

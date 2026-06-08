@@ -57,8 +57,9 @@ export-first when used.
 ## Open-Source Wedge
 
 The open-source wedge should solve one workflow well: run TeruBase from Maven
-and quickly produce reviewable schema context, seed plans, and seed artifacts
-from a Spring Boot application's JPA entities.
+to produce reviewable schema context and seed plans from a Spring Boot
+application's JPA entities, then check and copy SQL supplied by a developer or
+AI tool.
 
 The Maven plugin is local-first, useful without a cloud account, and easy to
 inspect. Seed plans, metadata quality, `INSERT`-only checks, export tests, and
@@ -86,7 +87,7 @@ These should not complicate the local starter before the core workflow is proven
 
 1. Validate the released Maven plugin against real Spring Boot/JPA projects.
 2. Improve plugin metadata for join columns, join tables, and additional JPA
-   mapping patterns.
+   mapping patterns, including transient-field filtering and property access.
 3. Make the plan-to-reviewed-SQL workflow clearer in documentation and demos.
 4. Keep AI generation optional, provider-agnostic, and export-first.
 5. Validate both familiar Spring Boot `data.sql` and versioned Flyway exports.

@@ -10,7 +10,7 @@
 
 <p align="center">
   <img alt="Java 21" src="https://img.shields.io/badge/Java-21-blue">
-  <img alt="Spring Boot 3.4+" src="https://img.shields.io/badge/Spring%20Boot-3.4%2B-brightgreen">
+  <img alt="Spring Boot 3.4.6" src="https://img.shields.io/badge/Spring%20Boot-3.4.6-brightgreen">
   <img alt="Maven" src="https://img.shields.io/badge/Maven-build-orange">
   <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green">
   <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.1">
@@ -97,7 +97,7 @@ or AI tool:
   values, and common relationship annotation types
 - creates reusable schema-context and seed-plan artifacts
 - checks reviewed SQL as `INSERT`-only
-- exports seed data into `data.sql` or a Flyway migration
+- copies reviewed SQL into `data.sql` or a Flyway migration path
 - keeps AI optional and export-first
 
 Use an AI assistant if you want help drafting SQL. Use TeruBase when you want a
@@ -107,7 +107,8 @@ See [ChatGPT vs TeruBase](docs/CHATGPT_VS_TERUBASE.md) for a linkable comparison
 
 ## Try It in 5 Minutes
 
-TeruBase requires Java 21 and Spring Boot 3.4+.
+TeruBase requires Java 21. The runtime starter is built and tested with Spring
+Boot 3.4.6; compatibility with later Spring Boot releases is not yet claimed.
 
 Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
 
@@ -125,6 +126,9 @@ Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
   </plugins>
 </build>
 ```
+
+Run the goal from the Maven module whose compiled output contains the entity
+classes. The current goal does not aggregate entity classes from child modules.
 
 Generate non-AI planning artifacts from compiled project classes:
 
@@ -182,7 +186,15 @@ OpenAI-compatible endpoint.
 
 ### Maven Plugin Limits
 
-- Entity inspection supports field annotations, not JPA property access.
+- Entity inspection recognizes Jakarta Persistence (`jakarta.persistence`)
+  annotations. It does not recognize legacy `javax.persistence` annotations.
+- The goal scans only the current Maven project's compiled output directory. In
+  a multi-module build, run it in the module containing the entities.
+- When `entityBasePackage` is omitted, the package filter defaults to the
+  current project's `groupId`, or `com` when no group ID is available.
+- Entity inspection supports field annotations, not JPA property access. It
+  currently records every non-static field and does not exclude fields marked
+  `@Transient`.
 - An explicit `@Table` name is recorded; otherwise `tableName` falls back to the
   Java class name. Fields always include their Java names, while column metadata
   is present only for explicit `@Column` annotations. The plugin does not apply
@@ -365,6 +377,7 @@ provider.
 | --- | --- | --- |
 | `GET` | `/terubase/api/entities` | Discover JPA entity metadata. |
 | `GET` | `/terubase/api/scenarios` | List built-in scenario templates. |
+| `GET` | `/terubase/api/scenarios/{id}` | Get one built-in scenario template. |
 | `GET` | `/terubase/api/seed-plan` | Build an AI-ready seed plan. |
 | `POST` | `/terubase/api/mock` | Generate export-first AI seed SQL. |
 | `POST` | `/terubase/api/export/sql` | Export reviewed `INSERT` statements as SQL. |
@@ -420,10 +433,16 @@ terubase:
 GET /terubase/api/entities
 ```
 
-TeruBase scans `terubase.entity-base-package` and returns JPA metadata for
-columns, IDs, generated values, enums, relationships, join columns, join
-tables, and deterministic insert-order hints. The hints guide seed generation;
-they are not a full database dependency planner.
+When `terubase.entity-base-package` is set, TeruBase scans that package. When it
+is omitted, the runtime starter derives candidate packages from application
+bean definitions and falls back to `com` if none are found. It returns JPA
+metadata for columns, IDs, generated values, enums, relationships, join
+columns, join tables, and deterministic insert-order hints. The hints guide
+seed generation; they are not a full database dependency planner.
+
+Runtime metadata inspection is also field-based. It does not inspect
+property/getter mappings, apply Hibernate physical naming strategies, or
+exclude fields marked `@Transient`.
 
 ### Choose a Scenario
 

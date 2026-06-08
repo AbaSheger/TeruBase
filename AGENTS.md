@@ -16,7 +16,7 @@ Core promise:
 ## Stack
 
 - Java 21
-- Spring Boot 3.4+
+- Spring Boot 3.4.6
 - Maven
 - Jakarta Persistence / JPA
 - H2 for isolated local execution
@@ -63,15 +63,12 @@ Core promise:
 
 ## Current Priority
 
-Make TeruBase worth trying by adding:
-
-1. Scenario templates
-2. An AI-ready seed-plan endpoint
-3. Safe SQL export endpoints
-4. Improved JPA metadata
-5. A local-only profile guard
-6. Tests
-7. Clear README examples
+- Keep documentation aligned with implemented behavior.
+- Validate the released Maven plugin against real Spring Boot/JPA projects.
+- Improve Maven-plugin metadata for join columns, join tables, and additional
+  JPA mapping patterns before claiming support for them.
+- Keep the runtime starter stable as an optional local playground.
+- Add focused tests for every behavioral change.
 
 ## Verification
 
