@@ -261,7 +261,8 @@ optional local playground and should not be removed.
   `target/terubase/seed-plan.md`.
 - `terubase:export-flyway` prototypes a Flyway-oriented export path without
   replacing Flyway or Liquibase.
-- `terubase:export-data-sql` writes validated SQL to Spring Boot's `data.sql`.
+- `terubase:export-data-sql` writes INSERT-only checked SQL to Spring Boot's
+  `data.sql`.
 - Plugin plan and export goals do not use AI tokens.
 - The plugin complements Flyway and Liquibase; it does not replace them.
 - AI generation remains optional and provider-agnostic in future work.

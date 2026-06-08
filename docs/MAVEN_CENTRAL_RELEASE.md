@@ -102,7 +102,7 @@ mvn -B -ntp -Pcentral-release '-Dgpg.skip=true' clean package
 
 Maven Central releases must not use a `-SNAPSHOT` version. For a manual local
 release, set the reactor parent and module versions to the release version, for
-example `0.1.0`. The invoice example is not part of the published reactor.
+example `0.1.2`. The invoice example is not part of the published reactor.
 
 Then deploy with the release profile:
 
@@ -118,7 +118,7 @@ https://central.sonatype.com/publishing/deployments
 ```
 
 After a manual local release, bump the project back to the next development
-version, for example `0.1.1-SNAPSHOT`.
+version, for example `0.1.3-SNAPSHOT`.
 
 ## Publish With GitHub Actions
 

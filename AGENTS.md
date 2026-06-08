@@ -2,14 +2,16 @@
 
 ## Project
 
-TeruBase is a Spring Boot-native AI seed-data copilot. It turns JPA entity
-metadata into realistic, relationship-aware, runnable seed data for local
-development, frontend demos, QA scenarios, and CI pipelines without using
-production data.
+TeruBase provides a Maven workflow that inspects compiled, field-annotated JPA
+entities, writes schema-context and seed-plan artifacts, checks reviewed SQL
+for INSERT-only statements, and copies that SQL to Spring Boot `data.sql` or a
+Flyway migration path. The optional Spring Boot starter provides richer
+metadata inspection, OpenAI-compatible SQL generation, export responses, and
+isolated H2 execution.
 
 Core promise:
 
-> From JPA entities to realistic runnable seed data in minutes.
+> From compiled JPA entities to reviewable planning artifacts and SQL exports.
 
 ## Stack
 
@@ -80,4 +82,3 @@ mvn -B -ntp clean verify
 ```
 
 If it cannot run, explain exactly why.
-
