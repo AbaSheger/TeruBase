@@ -359,23 +359,37 @@ mvn -B -ntp spring-boot:run
 See [`examples/invoice-demo/README.md`](examples/invoice-demo/README.md) for
 plugin output, curl examples, and details.
 
-## Workflow
+## Architecture
 
 ```mermaid
-flowchart LR
-    A[JPA Entities] --> B[GET /terubase/api/entities]
-    B --> C[GET /terubase/api/seed-plan]
-    C --> D[POST /terubase/api/mock]
-    D --> E[POST /terubase/api/export/sql]
-    D --> F[POST /terubase/api/export/json]
-    E --> G[local/demo/CI seed data]
-    F --> G
+flowchart TB
+    subgraph Plugin[Primary: Maven plugin workflow]
+        A[Compiled JPA entity classes] --> B[terubase:plan]
+        B --> C[schema-context.json]
+        B --> D[seed-plan.md]
+        C --> E[Developer or AI assistant drafts SQL]
+        D --> E
+        E --> F[Review generated-seed.sql]
+        F --> G{Export goal}
+        G -->|terubase:export-data-sql| H[src/main/resources/data.sql]
+        G -->|terubase:export-flyway| I[Flyway migration path]
+    end
+
+    subgraph Runtime[Optional: Spring Boot starter]
+        J[JPA entities] --> K[Metadata and seed-plan endpoints]
+        K --> L[POST /terubase/api/mock]
+        L --> M[OpenAI-compatible provider]
+        M --> N[INSERT-only checked statements]
+        N --> O[POST export/sql or export/json]
+        O --> P[SQL or JSON response]
+        N -->|execute=true| Q[Isolated TeruBase H2 database]
+    end
 ```
 
-The plugin workflow is build-time only: compiled JPA classes become
-schema-context and seed-plan files, then reviewed SQL is checked and copied to
-`data.sql` or the configured Flyway path. The plugin does not call an AI
-provider.
+The two flows are independent. The Maven plugin is build-time tooling and does
+not call an AI provider or start the runtime starter. The starter is an
+explicitly enabled local playground with HTTP endpoints and isolated H2
+execution.
 
 ## Endpoints
 
