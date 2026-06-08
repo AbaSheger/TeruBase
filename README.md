@@ -361,35 +361,33 @@ plugin output, curl examples, and details.
 
 ## Architecture
 
-```mermaid
-flowchart TB
-    subgraph Plugin[Primary: Maven plugin workflow]
-        A[Compiled JPA entity classes] --> B[terubase:plan]
-        B --> C[schema-context.json]
-        B --> D[seed-plan.md]
-        C --> E[Developer or AI assistant drafts SQL]
-        D --> E
-        E --> F[Review generated-seed.sql]
-        F --> G{Export goal}
-        G -->|terubase:export-data-sql| H[src/main/resources/data.sql]
-        G -->|terubase:export-flyway| I[Flyway migration path]
-    end
+### Maven Plugin
 
-    subgraph Runtime[Optional: Spring Boot starter]
-        J[JPA entities] --> K[Metadata and seed-plan endpoints]
-        K --> L[POST /terubase/api/mock]
-        L --> M[OpenAI-compatible provider]
-        M --> N[INSERT-only checked statements]
-        N --> O[POST export/sql or export/json]
-        O --> P[SQL or JSON response]
-        N -->|execute=true| Q[Isolated TeruBase H2 database]
-    end
+```mermaid
+flowchart LR
+    A[JPA classes] --> B[Plan files]
+    B --> C[Draft and review SQL]
+    C --> D{Export}
+    D --> E[data.sql]
+    D --> F[Flyway file]
 ```
 
-The two flows are independent. The Maven plugin is build-time tooling and does
-not call an AI provider or start the runtime starter. The starter is an
-explicitly enabled local playground with HTTP endpoints and isolated H2
-execution.
+`terubase:plan` creates `schema-context.json` and `seed-plan.md`. A developer or
+AI assistant drafts `generated-seed.sql`; TeruBase checks it as `INSERT`-only
+before copying it to the selected output.
+
+### Optional Runtime Starter
+
+```mermaid
+flowchart LR
+    A[JPA classes] --> B[Metadata and seed plan]
+    B --> C[AI provider]
+    C --> D[Review or export]
+    C --> E[Optional isolated H2]
+```
+
+The runtime starter is a separate, explicitly enabled local playground. The
+Maven plugin does not start it or call an AI provider.
 
 ## Endpoints
 
