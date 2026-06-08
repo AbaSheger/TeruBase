@@ -1,0 +1,64 @@
+name: Version Consistency Check
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  check-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from root pom.xml
+        id: pom_version
+        run: |
+          VERSION=$(grep -m1 '<version>' pom.xml | sed 's/.*<version>\(.*\)<\/version>/\1/' | tr -d '[:space:]')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Root pom.xml version: $VERSION"
+
+      - name: Check README.md badge matches pom version
+        run: |
+          POM_VERSION="${{ steps.pom_version.outputs.version }}"
+          # Strip -SNAPSHOT for released version checks
+          RELEASE_VERSION="${POM_VERSION%-SNAPSHOT}"
+          if ! grep -q "Maven%20Central-${RELEASE_VERSION}-blue" README.md; then
+            echo "❌ README.md Maven Central badge does not match released version ${RELEASE_VERSION}"
+            echo "   Update the badge and all version snippets in README.md to match."
+            exit 1
+          fi
+          echo "✅ README.md badge matches version ${RELEASE_VERSION}"
+
+      - name: Check README.md plugin snippet matches pom version
+        run: |
+          POM_VERSION="${{ steps.pom_version.outputs.version }}"
+          RELEASE_VERSION="${POM_VERSION%-SNAPSHOT}"
+          COUNT=$(grep -c "<version>${RELEASE_VERSION}</version>" README.md || true)
+          if [ "$COUNT" -lt 2 ]; then
+            echo "❌ README.md plugin/starter <version> snippets do not all match ${RELEASE_VERSION} (found $COUNT, expected at least 2)"
+            exit 1
+          fi
+          echo "✅ README.md version snippets ($COUNT) match ${RELEASE_VERSION}"
+
+      - name: Check invoice-demo pom.xml matches pom version
+        run: |
+          POM_VERSION="${{ steps.pom_version.outputs.version }}"
+          RELEASE_VERSION="${POM_VERSION%-SNAPSHOT}"
+          if ! grep -q "<terubase.version>${RELEASE_VERSION}</terubase.version>" examples/invoice-demo/pom.xml; then
+            echo "❌ examples/invoice-demo/pom.xml terubase.version does not match ${RELEASE_VERSION}"
+            exit 1
+          fi
+          echo "✅ examples/invoice-demo/pom.xml terubase.version matches ${RELEASE_VERSION}"
+
+      - name: Check invoice-demo README.md matches pom version
+        run: |
+          POM_VERSION="${{ steps.pom_version.outputs.version }}"
+          RELEASE_VERSION="${POM_VERSION%-SNAPSHOT}"
+          if ! grep -q "${RELEASE_VERSION}" examples/invoice-demo/README.md; then
+            echo "❌ examples/invoice-demo/README.md does not reference version ${RELEASE_VERSION}"
+            exit 1
+          fi
+          echo "✅ examples/invoice-demo/README.md references ${RELEASE_VERSION}"
+

@@ -17,7 +17,7 @@ it is disabled by default in consuming applications.
 
 ## Maven Plugin Workflow
 
-TeruBase `0.1.1` is declared in the demo `pom.xml`. Generate non-AI seed-plan
+TeruBase `0.1.2` is declared in the demo `pom.xml`. Generate non-AI seed-plan
 artifacts from the invoice demo:
 
 ```bash

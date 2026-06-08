@@ -13,8 +13,8 @@
   <img alt="Spring Boot 3.4.6" src="https://img.shields.io/badge/Spring%20Boot-3.4.6-brightgreen">
   <img alt="Maven" src="https://img.shields.io/badge/Maven-build-orange">
   <img alt="MIT License" src="https://img.shields.io/badge/License-MIT-green">
-  <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.1">
-    <img alt="Maven Central" src="https://img.shields.io/badge/Maven%20Central-0.1.1-blue">
+  <a href="https://central.sonatype.com/artifact/io.github.abasheger/terubase-maven-plugin/0.1.2">
+    <img alt="Maven Central" src="https://img.shields.io/badge/Maven%20Central-0.1.2-blue">
   </a>
   <a href="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml">
     <img alt="Build status" src="https://github.com/AbaSheger/TeruBase/actions/workflows/maven.yml/badge.svg">
@@ -33,7 +33,7 @@ and writes reviewable artifacts without requiring an AI account:
 <plugin>
   <groupId>io.github.abasheger</groupId>
   <artifactId>terubase-maven-plugin</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </plugin>
 ```
 
@@ -120,7 +120,7 @@ Add the Maven plugin to a Spring Boot/JPA project's `pom.xml`:
     <plugin>
       <groupId>io.github.abasheger</groupId>
       <artifactId>terubase-maven-plugin</artifactId>
-      <version>0.1.1</version>
+      <version>0.1.2</version>
       <configuration>
         <entityBasePackage>com.example.yourapp</entityBasePackage>
       </configuration>
@@ -286,7 +286,7 @@ playground endpoints:
 <dependency>
     <groupId>io.github.abasheger</groupId>
     <artifactId>terubase-spring-boot-starter</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 

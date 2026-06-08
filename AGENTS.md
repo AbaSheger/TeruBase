@@ -72,6 +72,15 @@ Core promise:
 - Keep the runtime starter stable as an optional local playground.
 - Add focused tests for every behavioral change.
 
+## Documentation Sync Rules
+
+- Whenever the project version changes in any `pom.xml`, also update:
+  - `README.md` — badge link, Maven Central URL, plugin `<version>`, starter `<version>`
+  - `examples/invoice-demo/README.md` — any version text references
+  - `examples/invoice-demo/pom.xml` — `<terubase.version>` property
+- Never leave a released version in docs that differs from the version in `pom.xml`.
+- When adding or renaming a feature, update the matching section in `README.md` in the same change.
+
 ## Verification
 
 Run the full verification command after implementation work:
