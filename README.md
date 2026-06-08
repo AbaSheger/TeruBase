@@ -84,13 +84,13 @@ run Flyway or replace a migration tool.
 - Reject blank exports and statements that are not `INSERT` statements.
 - Copy reviewed SQL to Spring Boot `data.sql` or a fixed Flyway migration path.
 
-## Why Not Just ChatGPT?
+## Working With AI Coding Assistants
 
-ChatGPT, Claude, Cursor, and Copilot can write example `INSERT` statements.
-That is useful, but it is not the whole workflow.
+Codex, Copilot, Cursor, Claude, ChatGPT, and other coding assistants can draft
+seed SQL. TeruBase complements them by providing a deterministic workflow around
+the generated output.
 
-The Maven plugin adds project-specific context around SQL written by a developer
-or AI tool:
+The Maven plugin:
 
 - scans your compiled Spring Boot/JPA model
 - records explicit `@Table` and `@Column` names, Java enums, IDs, generated
@@ -100,10 +100,12 @@ or AI tool:
 - copies reviewed SQL into `data.sql` or a Flyway migration path
 - keeps AI optional and export-first
 
-Use an AI assistant if you want help drafting SQL. Use TeruBase when you want a
-repeatable Spring/JPA workflow around that SQL.
+The assistant remains responsible for drafting row values. TeruBase supplies
+project metadata and planning artifacts, checks the reviewed result as
+`INSERT`-only, and copies it to the selected Spring Boot or Flyway path.
 
-See [ChatGPT vs TeruBase](docs/CHATGPT_VS_TERUBASE.md) for a linkable comparison.
+See [AI coding assistants and TeruBase](docs/AI_ASSISTANTS_AND_TERUBASE.md) for the
+division of responsibilities.
 
 ## Try It in 5 Minutes
 

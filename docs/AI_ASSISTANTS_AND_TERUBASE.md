@@ -1,22 +1,23 @@
-# ChatGPT vs TeruBase
+# AI Coding Assistants and TeruBase
 
-ChatGPT, Claude, Cursor, and Copilot are useful for drafting seed SQL. If you
-paste a schema and ask for example rows, they can often produce reasonable
-`INSERT` statements.
+Codex, Copilot, Cursor, Claude, ChatGPT, and similar tools can draft seed SQL
+from project context. TeruBase is designed to provide that context and manage
+the repeatable steps around the draft.
 
-TeruBase is not trying to replace that. It adds the repeatable Spring Boot/JPA
-workflow around seed data.
+The tools have different responsibilities: an AI assistant can author row
+values, while TeruBase inspects the project, creates planning artifacts, checks
+the reviewed SQL as `INSERT`-only, and copies it to a conventional output path.
 
-## Plain AI Prompt
+## Using an Assistant Alone
 
 ```text
 Generate seed INSERT statements for customers, invoices, and payments.
 Use realistic demo data.
 ```
 
-This can be enough for a one-off script, but the result depends on what you
-remember to paste into the prompt. It may miss entity relationships, enum
-values, generated IDs, nullability, unique fields, or migration workflow details.
+This can be enough for a one-off script, but the available context depends on
+what the developer provides during that session. The prompt and result are not
+automatically tied to a repeatable project artifact.
 
 ## TeruBase Workflow
 
@@ -56,17 +57,24 @@ src/main/resources/data.sql
 src/main/resources/db/migration/V999__terubase_seed_data.sql
 ```
 
-## What TeruBase Adds
+## Division of Responsibilities
 
-- Selected field-annotation metadata from compiled JPA entities
-- Basic relationship and insert-order hints
-- Java enum, ID, generated-value, explicit `@Table`/`@Column`, and common
-  relationship annotation metadata
-- Repeatable plan artifacts in `target/terubase`
-- `INSERT`-only SQL checks
-- Spring Boot `data.sql` export and copy to a fixed Flyway migration path
-- Local-first workflow that does not require production data
-- Optional AI usage instead of an AI-only workflow
+An AI coding assistant can:
+
+- draft realistic row values and `INSERT` statements
+- adapt a draft to a scenario or demo requirement
+- revise SQL after developer feedback
+
+TeruBase can:
+
+- inspect selected field annotations from compiled JPA entities
+- record basic relationship and insert-order hints
+- record Java enums, IDs, generated values, explicit `@Table`/`@Column`
+  metadata, and common relationship annotation types
+- write repeatable plan artifacts under `target/terubase`
+- check reviewed SQL as `INSERT`-only
+- copy reviewed SQL to Spring Boot `data.sql` or a fixed Flyway migration path
+- operate without an AI provider when SQL is supplied manually
 
 The Maven plugin does not generate row values or call an AI provider. The
 optional runtime starter includes a separate OpenAI-compatible generation
@@ -78,9 +86,9 @@ modules, build a full foreign-key graph, or validate SQL against a database. It
 recognizes Jakarta Persistence annotations, not legacy `javax.persistence`
 annotations.
 
-## Positioning
+## When to Use Each
 
-Use plain AI when you need a quick draft.
+Use an AI coding assistant alone when a one-off SQL draft is sufficient.
 
-Use TeruBase when you want a repeatable seed-data workflow for a Spring Boot/JPA
-project.
+Use TeruBase with or without an assistant when you want reviewable project
+artifacts and a repeatable seed-data workflow for a Spring Boot/JPA project.
